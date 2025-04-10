@@ -5,25 +5,6 @@ body {
     background-color: #f9f9f9; /* Couleur de fond spécifique à la page de connexion */
 }
 
-header {
-    background-color: #e7311d;
-    padding: 10px 0;
-}
-
-.header-container {
-    display: flex;
-    justify-content: flex-start; /* Aligne le bouton "Accueil" à gauche */
-    padding: 0 20px;
-}
-
-.header-button {
-    background-color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-}
 
 main {
     margin: 50px auto;
@@ -75,23 +56,3 @@ input:focus {
     width: 100%; /* Bouton prend toute la largeur */
 }
 
-footer {
-    background-color: #f0f0f0;
-    padding: 20px;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-sizing: border-box;
-    font-size: 0.8em;
-}
-
-.contact-link {
-    color: #e74c3c;
-    text-decoration: none;
-    font-weight: bold;
-    padding-right: 10px;
-    white-space: nowrap;
-}
