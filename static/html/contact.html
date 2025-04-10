@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nous contacter - Stock O' CESI</title>
+    <link rel="stylesheet" href="../css/contact.css">
+    <link rel="stylesheet" href="../css/header.css">
+    <link rel="stylesheet" href="../css/footer.css">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <button class="header-button" onclick="window.location.href='accueil.html'">Retour</button>
+            
+            <button class="header-button" onclick="window.location.href='connexion.html'">Connexion</button>
+        </div>
+    </header>
+    <main>
+        <form action="#" method="post">
+            <h1>Nous contacter !</h1>
+            <div>
+                <label for="sujet">Sujet</label><br>
+                <select id="sujet" name="sujet" required>
+                    <option value="question">Question</option>
+                    <option value="suggestion">Suggestion</option>
+                    <option value="autre">Autre</option>
+                </select>
+            </div>
+            <div>
+                <label for="nom">Nom</label><br>
+                <input type="text" id="nom" name="nom" required>
+            </div>
+            <div>
+                <label for="prenom">Prénom</label><br>
+                <input type="text" id="prenom" name="prenom" required>
+            </div>
+            <div>
+                <label for="email">Adresse mail</label><br>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div>
+                <label for="message">Message</label><br>
+                <textarea id="message" name="message" rows="5" required></textarea>
+            </div>
+            <button type="submit" class="main-button">Envoyer</button>
+        </form>
+    </main>
+    <footer>
+        <p>©Stock O’ CESI, tout droit réservé</p>
+        <a href="#" class="contact-link">Nous contacter !</a>
+    </footer>
+</body>
+</html>

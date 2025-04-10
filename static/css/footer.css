@@ -1,0 +1,20 @@
+footer {
+    background-color: #f0f0f0;
+    padding: 20px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-sizing: border-box;
+    font-size: 0.8em;
+}
+
+.contact-link {
+    color: #e7311d; /* Met le lien "Nous contacter" en rouge */
+    text-decoration: none;
+    font-weight: bold;
+    padding-right: 10px;
+    white-space: nowrap;
+}

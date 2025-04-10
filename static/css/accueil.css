@@ -4,26 +4,6 @@ body {
     text-align: center;
 }
 
-header {
-    background-color: #e7311d;
-    padding: 10px 0;
-}
-
-.header-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 20px;
-} 
-
-.header-button {
-    background-color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-}
 
 main {
     margin: 50px 0;
@@ -47,26 +27,4 @@ p {
     border-radius: 10px;
     font-size: 1.2em;
     cursor: pointer;
-}
-footer {
-    background-color: #f0f0f0;
-    padding: 20px;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-sizing: border-box;
-    font-size: 0.8em;
-    margin: 0 /* Assure que le padding est inclus dans la largeur */
-}
-
-.contact-link {
-    color: #e74c3c;
-    text-decoration: none;
-    font-weight: bold;
-    margin-left: 0; /* Supprime la marge négative */
-    padding-right: 10px; /* Ajoute un espace pour éviter qu'il ne touche le bord */
-    white-space: nowrap; /* Empêche le texte de se couper sur plusieurs lignes */
 }
