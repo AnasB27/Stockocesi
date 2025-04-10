@@ -5,7 +5,7 @@ body {
 }
 
 header {
-    background-color: #e74c3c;
+    background-color: #e7311d;
     padding: 10px 0;
 }
 
@@ -14,7 +14,7 @@ header {
     justify-content: space-between;
     align-items: center;
     padding: 0 20px;
-}
+} 
 
 .header-button {
     background-color: white;
@@ -40,7 +40,7 @@ p {
 }
 
 .main-button {
-    background-color: #e74c3c;
+    background-color: #e7311d;
     color: white;
     border: none;
     padding: 15px 30px;
@@ -48,7 +48,6 @@ p {
     font-size: 1.2em;
     cursor: pointer;
 }
-
 footer {
     background-color: #f0f0f0;
     padding: 20px;
@@ -58,10 +57,14 @@ footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    box-sizing: border-box; /* Assure que le padding est inclus dans la largeur */
 }
 
 .contact-link {
     color: #e74c3c;
     text-decoration: none;
     font-weight: bold;
+    margin-left: 0; /* Supprime la marge négative */
+    padding-right: 10px; /* Ajoute un espace pour éviter qu'il ne touche le bord */
+    white-space: nowrap; /* Empêche le texte de se couper sur plusieurs lignes */
 }
