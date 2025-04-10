@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créer un compte - Stock O' CESI</title>
+    <link rel="stylesheet" href="../css/creer_compte.css">
+    <link rel="stylesheet" href="../css/main.css">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <button class="header-button" onclick="window.location.href='accueil.html'">Accueil</button>
+        </div>
+    </header>
+    <main>
+        <h1 class="page-title">Créer un compte</h1>
+        <form action="#" method="post">
+            <div>
+                <label for="nom">Nom</label><br>
+                <input type="text" id="nom" name="nom" required>
+            </div>
+            <div>
+                <label for="prenom">Prénom</label><br>
+                <input type="text" id="prenom" name="prenom" required>
+            </div>
+            <div>
+                <label for="email">Adresse mail</label><br>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div>
+                <label for="password">Mot de passe</label><br>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <div>
+                <label for="entreprise">Entreprise</label><br>
+                <select id="entreprise" name="entreprise" required>
+                    <option value="" disabled selected>Rechercher</option>
+                    <option value="entreprise1">Entreprise 1</option>
+                    <option value="entreprise2">Entreprise 2</option>
+                </select>
+            </div>
+            <div>
+                <h3>Rôle:</h3>
+
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="gestionnaire" name="role" value="gestionnaire">
+                <label for="gestionnaire">Gestionnaire</label><br>
+                <input type="checkbox" id="employe" name="role" value="employe">
+                <label for="employe">Employé</label>
+                <div></div>
+            </div>
+            <button type="submit" class="main-button">Créer</button>
+        </form>
+    </main>
+    <footer>
+        <p>©Stock O’ CESI, tout droit réservé</p>
+        <button class="contact-link" onclick="window.location.href='mentions.html'">Mentions légales</button>
+    </footer>
+</body>
+</html>
