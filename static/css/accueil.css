@@ -57,7 +57,9 @@ footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-sizing: border-box; /* Assure que le padding est inclus dans la largeur */
+    box-sizing: border-box;
+    font-size: 0.8em;
+    margin: 0 /* Assure que le padding est inclus dans la largeur */
 }
 
 .contact-link {
