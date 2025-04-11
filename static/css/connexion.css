@@ -1,16 +1,23 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
 body {
+    display: flex;
+    flex-direction: column; /* Permet de centrer le contenu verticalement */
     margin: 0;
     font-family: Arial, sans-serif;
     text-align: center;
     background-color: #f9f9f9; /* Couleur de fond spécifique à la page de connexion */
 }
 
-
 main {
-    margin: 50px auto;
-    max-width: 400px; /* Limite la largeur du formulaire */
+    margin: auto; /* Centre verticalement et horizontalement */
+    max-width: 500px; /* Largeur ajustée pour ressembler à l'image */
     background-color: white; /* Fond blanc pour le formulaire */
-    padding: 20px;
+    padding: 30px; /* Augmente l'espace intérieur */
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Ajoute une ombre pour un effet de carte */
 }

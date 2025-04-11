@@ -31,11 +31,14 @@ header {
     font-weight: bold;
 }
 
+/* Le main prend tout l'espace disponible entre le header et le footer */
+
+
 footer {
     background-color: #f0f0f0;
-    padding: 20px;
-    position: fixed;
-    bottom: 0;
+    padding-bottom: 20px;
+    padding-top: 10px;
+    
     width: 100%;
     display: flex;
     justify-content: space-between;
@@ -49,7 +52,7 @@ footer {
     color: #e7311d; /* Met le lien "Nous contacter" en rouge */
     text-decoration: none;
     font-weight: bold;
-    padding-right: 5px;
+    padding-right: 10px;
     white-space: nowrap;
 }
 
