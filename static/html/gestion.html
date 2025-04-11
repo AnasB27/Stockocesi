@@ -9,38 +9,42 @@
 </head>
 <body>
     <header>
+        
         <div class="header-container">
-            <button class="header-button" onclick="window.location.href='accueil.html'">Accueil</button>
-            <h1 class="header-title">Gestion</h1>
-            <button class="header-button" onclick="window.location.href='messages.html'">Messages</button>
+            <div class="logo-container">
+                <img src="../assets/img/logo.png" alt="Logo de Stock O' CESI" class="logo">
+            </div>
+            
+            <h1>Gestionnaire</h1>
+            <div class="burger-menu">
+                <span class="burger-icon"></span>
+                <nav class="nav-menu">
+                    <ul>
+                        <li><a href="accueil.html">Accueil</a></li>
+                        <li><a href="creer_compte.html">Créer un compte</a></li>
+                        <li><a href="gerer_comptes.html">Gérer les comptes</a></li>
+                        <li><a href="ajouter_magasin.html">Ajouter un magasin</a></li>
+                        <li><a href="gerer_magasins.html">Gérer les magasins</a></li>
+                    </ul>
+                </nav>
+            </div>
         </div>
     </header>
     <main>
-        <section>
-            <h2>Comptes</h2>
-            <div class="button-group">
-                <button class="main-button" onclick="window.location.href='creer_compte.html'">Créer un compte</button>
-                <button class="main-button" onclick="window.location.href='gerer_comptes.html'">Gérer les comptes</button>
-            </div>
-        </section>
-        <section>
-            <h2>Magasins</h2>
-            <div class="button-group">
-                <button class="main-button" onclick="window.location.href='ajouter_magasin.html'">Ajouter un magasin</button>
-                <button class="main-button" onclick="window.location.href='gerer_magasins.html'">Gérer les magasins</button>
-            </div>
-        </section>
-        <section>
-            <h2>Historique et sécurité</h2>
-            <div class="button-group">
-                <button class="main-button" onclick="window.location.href='journal_actions.html'">Journal d’actions</button>
-            </div>
-        </section>
+        <h1>Journal d'activité</h1>
+        <div class="button-clear">
+            <button class="button-clear">Effacer l'historique</button>
+        </div>
     </main>
+
+
     <footer>
-        <p>©Stock O’ CESI, tout droit réservé</p>
-        <button class="contact-link" onclick="window.location.href='contact.html'">Nous contacter !</button>
-        <button class="contact-link" onclick="window.location.href='mentions.html'">Mentions légales</button>
+        <p>©Stock O' CESI, tout droit réservé</p>
+        <div class="footer-links">
+            <button class="contact-link" onclick="window.location.href='contact.html'">Nous contacter !</button>
+            <button class="contact-link" onclick="window.location.href='mentions.html'">Mentions légales</button>
+        </div>
     </footer>
+    <script src="../js/burger.js"></script>
 </body>
 </html>
