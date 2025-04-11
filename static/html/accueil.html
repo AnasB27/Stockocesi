@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -6,42 +7,60 @@
     <title>Stock O' CESI</title>
     <link rel="stylesheet" href="../css/accueil.css">
     <link rel="stylesheet" href="../css/main.css">
-    
-
 </head>
 <body>
     <header>
         <div class="header-container">
-            <button class="header-button">Nos magasins partenaires</button>
-            <button class="header-button" onclick="window.location.href='connexion.html'">Connexion</button>
+            <div class="logo-container">
+                <img src="../assets/img/logo.png" alt="Logo de Stock O' CESI" class="logo">
+            </div>
+            
+            <h4>Gérez vos stocks tout au long de l'année</h4>
+            <div class="burger-menu">
+                <span class="burger-icon"></span>
+                <nav class="nav-menu">
+                    <ul>
+                        <li><a href="connexion.html">Connexion</a></li>
+                        <li><a href="gestion.html">Gestion</a></li>
+                        <li><a href="magasins.html">Magasins partenaires</a></li>
+                        <li><a href="journal_actions.html">Journal d'actions</a></li>
+                    </ul>
+                </nav>
+            </div>
         </div>
     </header>
-    <main>
-        <h1>Stock O’ CESI !</h1>
-        <p>Gérez vos stock tout au long de l’année</p>
-        <button class="main-button" onclick="window.location.href='gestion.html'">Gestion</button>
-    </main>
-    <section>
-        <h2>Nos services</h2>
 
-        <div>
-            <h3>Gestion de stock</h3>
-            <p>Gérez vos stocks de manière efficace et simple.</p>
-        </div>
-        <div>
-            <h3>Partenaires</h3>
-            <p>Accédez à un réseau de partenaires pour vos besoins en stock.</p>
-        </div>
-        <div>
-            <h3>Support</h3>
-            <p>Notre équipe est là pour vous aider à chaque étape.</p>
-        </div>
+    <main>
+        
+        <button class="main-button" onclick="window.location.href='stock.html'">Mon stock</button>
     
+        <section>
+            <h2>Nos services</h2>
+            <div class="services-container">
+                <div class="service">
+                    <h3>Gestion de stock</h3>
+                    <p>Gérez vos stocks de manière efficace et simple.</p>
+                </div>
+                <div class="service">
+                    <h3>Partenaires</h3>
+                    <p>Accédez à un réseau de partenaires pour vos besoins en stock.</p>
+                </div>
+                <div class="service">
+                    <h3>Support</h3>
+                    <p>Notre équipe est là pour vous aider à chaque étape.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
     <footer>
-        <p>©Stock O’ CESI, tout droit réservé</p>
-        <button class="contact-link" onclick="window.location.href='contact.html'">Nous contacter !</button>
-        <button class="contact-link" onclick="window.location.href='mentions.html'">Mentions légales</button>
+        <p>©Stock O' CESI, tout droit réservé</p>
+        <div class="footer-links">
+            <button class="contact-link" onclick="window.location.href='contact.html'">Nous contacter !</button>
+            <button class="contact-link" onclick="window.location.href='mentions.html'">Mentions légales</button>
+        </div>
     </footer>
-    
+
+    <script src="../js/burger.js"></script>
 </body>
 </html>
