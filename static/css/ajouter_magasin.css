@@ -7,7 +7,14 @@ body {
     color: #333;
 }
 
-
+h1 {
+    color: #e7311d; /* Rouge */
+    text-align: center; /* Centré */
+    font-family: Arial, sans-serif;
+    font-size: 28px;
+    font-weight: bold;
+    margin: 20px 0;
+}
 
 /* Form styles */
 form {
