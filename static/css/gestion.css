@@ -1,8 +1,9 @@
 body {
-    margin: 0;
+    margin: 0;;
     font-family: Arial, sans-serif;
     text-align: center;
     background-color: #f9f9f9;
+    
 }
 
 main {
@@ -21,8 +22,16 @@ h2 {
     justify-content: center;
     gap: 20px;
     margin-bottom: 40px;
+    position: relative;
+    
 }
+.button-clear {
+    
+    bottom: 60px;
+    right: 10px;
+    padding-right: 10px;
 
+}
 .main-button {
     background-color: #e7311d;
     color: white;
@@ -36,4 +45,52 @@ h2 {
 
 .main-button:hover {
     background-color: #c1271a;
+}
+
+/* ...existing code... */
+
+/* Ajout du responsive design */
+@media (max-width: 768px) {
+    main {
+        margin: 30px auto;
+        max-width: 90%;
+        padding: 0 15px;
+    }
+
+    h2 {
+        font-size: 1.5em;
+        margin-bottom: 15px;
+    }
+
+    .button-group {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .button-clear {
+        position: static;
+        margin-top: 20px;
+        
+    }
+
+    .main-button {
+        width: 100%;
+        padding: 12px 20px;
+        font-size: 1em;
+    }
+}
+
+@media (max-width: 480px) {
+    main {
+        margin: 20px auto;
+    }
+
+    h2 {
+        font-size: 1.3em;
+    }
+
+    .main-button {
+        padding: 10px 15px;
+        font-size: 0.9em;
+    }
 }
