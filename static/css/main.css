@@ -3,27 +3,39 @@ main {
     padding-bottom: 150px; /* Ajoute de l'espace pour éviter que le footer cache le contenu */
     box-sizing: border-box;
 }
-
+/* Global styles */
+body {
+    font-family: Arial, sans-serif; /* Police utilisée sur les autres pages */
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+    color: #333;
+    line-height: 1.6;
+}
+/* Style général pour le header */
 header {
-    background-color: #e7311d;
-    padding: 10px 0;
+    background-color: #e7311d; /* Couleur rouge uniforme */
     color: white;
+    padding: 20px 0;
     text-align: center;
     border-bottom-left-radius: 20px;
     border-bottom-right-radius: 20px;
-
     position: relative;
-    
+    margin: 0;
+    box-sizing: border-box;
 }
 
+/* Conteneur du header */
 .header-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 80px;
+    padding: 0 20px;
+    max-width: 1200px;
+    margin: 0 auto;
     box-sizing: border-box;
-    
 }
+
 /* Le main prend tout l'espace disponible entre le header et le footer */
 
 
