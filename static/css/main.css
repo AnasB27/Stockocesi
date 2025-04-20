@@ -43,7 +43,6 @@ footer {
     background-color: #f0f0f0;
     padding-bottom: 20px;
     padding-top: 10px;
-    
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -53,6 +52,13 @@ footer {
     font-size: 0.8em;
     flex-wrap: wrap; /* Permet au contenu de s'adapter sur petits écrans */
     bottom: 0;
+    left: 0;
+    position: relative; /* Position relative pour le footer */
+    margin-top: 20px; /* Ajoute de l'espace entre le footer et le contenu */
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 1000; /* Assure que le footer est au-dessus du contenu */
 }
 
 .contact-link {
