@@ -19,12 +19,12 @@
     cursor: pointer;
 }
 
-/* Liste des comptes */
-.account-list {
+/* Liste des stocks */
+.stock-list {
     margin: 20px;
 }
 
-.account-item {
+.stock-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -35,10 +35,38 @@
     margin-bottom: 10px;
 }
 
+.stock-item span {
+    flex: 1;
+    margin-right: 10px;
+}
+
 .delete-button img {
     width: 24px;
     height: 24px;
     cursor: pointer;
+}
+
+/* Conteneur pour le bouton d'ajout de produit */
+.add-product-container {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+/* Bouton d'ajout de produit */
+.add-product-button {
+    background-color: #e7311d;
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.add-product-button:hover {
+    background-color: #c6281a;
 }
 
 /* Responsive Design */
@@ -57,7 +85,7 @@
         height: 20px;
     }
 
-    .account-item {
+    .stock-item {
         flex-direction: column;
         align-items: flex-start;
         padding: 15px;
@@ -73,7 +101,7 @@
         margin: 10px;
     }
 
-    .account-item {
+    .stock-item {
         padding: 10px;
     }
 
