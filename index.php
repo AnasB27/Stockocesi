@@ -8,46 +8,47 @@ require "vendor/autoload.php";
 
 use App\Controllers\TaskController;
 
+// Initialize Twig
 $loader = new \Twig\Loader\FilesystemLoader('templates');
 $twig = new \Twig\Environment($loader, [
     'debug' => true
 ]);
 
-if (isset($_GET['uri'])) {
-    $uri = $_GET['uri'];
-} else {
-    $uri = '/';
-}
+// Get the URI from the request
+$uri = $_GET['uri'] ?? '/';
 
+// Initialize the controller
 $controller = new TaskController($twig);
 
+// Route the request
 switch ($uri) {
     case '/':
-        // TODO : call the welcomePage method of the controller
-        echo 'Welcome page';
+        // Call the welcomePage method of the controller
+        $controller->welcomePage();
         break;
     case 'add_task':
-        // TODO : call the addTask method of the controller
-        echo 'Add task action';
+        // Call the addTask method of the controller
+        $controller->addTask();
         break;
     case 'check_task':
-        // TODO : call the checkTask method of the controller
-        echo 'Check task action';
+        // Call the checkTask method of the controller
+        $controller->checkTask();
         break;
     case 'history':
-        // TODO : call the historyPage method of the controller
-        echo 'History page';
+        // Call the historyPage method of the controller
+        $controller->historyPage();
         break;
     case 'uncheck_task':
-        // TODO : call the uncheckTask method of the controller
-        echo 'Uncheck task action';
+        // Call the uncheckTask method of the controller
+        $controller->uncheckTask();
         break;
     case 'about':
-        // TODO : call the aboutPage method of the controller
-        echo 'About page';
+        // Call the aboutPage method of the controller
+        $controller->aboutPage();
         break;
     default:
-        // TODO : return a 404 error
+        // Return a 404 error for unknown routes
+        http_response_code(404);
         echo '404 Not Found';
         break;
 }

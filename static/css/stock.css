@@ -1,0 +1,112 @@
+/* Barre de recherche */
+.search-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20px;
+}
+
+.search-input {
+    width: 80%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.filter-button img {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+}
+
+/* Liste des stocks */
+.stock-list {
+    margin: 20px;
+}
+
+.stock-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #e7311d;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.stock-item span {
+    flex: 1;
+    margin-right: 10px;
+}
+
+.delete-button img {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+}
+
+/* Conteneur pour le bouton d'ajout de produit */
+.add-product-container {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+/* Bouton d'ajout de produit */
+.add-product-button {
+    background-color: #e7311d;
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.add-product-button:hover {
+    background-color: #c6281a;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .search-bar {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .search-input {
+        width: 100%;
+    }
+
+    .filter-button img {
+        width: 20px;
+        height: 20px;
+    }
+
+    .stock-item {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 15px;
+    }
+
+    .delete-button img {
+        align-self: flex-end;
+    }
+}
+
+@media (max-width: 480px) {
+    .search-bar {
+        margin: 10px;
+    }
+
+    .stock-item {
+        padding: 10px;
+    }
+
+    .delete-button img {
+        width: 20px;
+        height: 20px;
+    }
+}
