@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="static/css/variable.css" />
+    <link rel="stylesheet" href="static/css/login.css" />
+    <link rel="icon" href="static/images/favicon.svg" type="image/svg" />
+    <title>{{ pageTitle|default('Connexion - StageLink') }}</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="stagelink">StageLink</div>
+        <div class="form-container">
+            <div class="texte-intro">
+                Ravi de vous retrouver sur StageLink !<br />
+                Retrouvez toutes vos offres et candidatures en vous connectant :
+            </div>
+
+            {% if error is not empty %}
+                <div class="message">{{ error }}</div>
+            {% endif %}
+
+            <form method="POST" action="index.php?route=login">
+                <div class="bloc-input">
+                    <label for="">Adresse mail <input type="email" name="email" required /></label>
+                    <label for="">Mot de passe 
+                        <input type="password" name="mot_de_passe" required />
+                        <div class="password-icon">
+                            <i data-feather="eye"></i>
+                            <i data-feather="eye-off"></i>
+                        </div>
+                    </label>
+                </div>
+                <button type="submit">Je me connecte</button>
+            </form>
+        </div>
+    </div>
+</body>
+<script src="https://unpkg.com/feather-icons"></script>
+<script src="static/js/login.js"></script>
+
+</html>

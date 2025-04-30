@@ -1,0 +1,45 @@
+<!-- filepath: /workspaces/Web_Rattrapage/src/Views/accueil/accueil.twig -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock O' CESI</title>
+    <link rel="stylesheet" href="/static/css/accueil.css">
+    <link rel="stylesheet" href="/static/css/main.css">
+</head>
+<body>
+    
+    {% include 'layout/header.twig' %}
+
+    <main>
+        
+        {% if user is defined %}
+            <button class="main-button" onclick="window.location.href='/stock'">Mon stock</button>
+        {% else %}
+            <button class="main-button" onclick="window.location.href='/connexion'">Connexion</button>
+        {% endif %}
+    
+        <section>
+            <h2>Nos services</h2>
+            <div class="services-container">
+                <div class="service">
+                    <h3>Gestion de stock</h3>
+                    <p>Gérez vos stocks de manière efficace et simple.</p>
+                </div>
+                <div class="service">
+                    <h3>Partenaires</h3>
+                    <p>Accédez à un réseau de partenaires pour vos besoins en stock.</p>
+                </div>
+                <div class="service">
+                    <h3>Support</h3>
+                    <p>Notre équipe est là pour vous aider à chaque étape.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    {% include 'layout/footer.twig' %}
+
+</body>
+</html>

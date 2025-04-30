@@ -1,0 +1,687 @@
+.entreprise-details {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.entreprise-details .centre {
+  display: flex;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.entreprise-details .navbar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: inherit;
+  width: fit-content;
+}
+
+textarea {
+  font-family: "Inter", sans-serif;
+}
+
+.entreprise-details .navbar svg {
+  width: 22px;
+  height: 16px;
+}
+
+.entreprise-details .texte {
+  font-size: var(--taille-texte);
+}
+
+/* Contenu principal */
+.entreprise-details .entreprise-content {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+/* En-tête et titre */
+.entreprise-details .entreprise-header {
+  text-align: center;
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.entreprise-details .entreprise-header h1 {
+  font-size: 32px;
+  color: var(--primary-color);
+  margin: 0;
+  padding: 0;
+}
+
+/* Boutons d'administration */
+.entreprise-details .admin-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.entreprise-details .btn-edit,
+.btn-delete,
+.btn-cancel,
+.btn-submit {
+  padding: 8px 16px;
+  color: var(--couleur-button);
+  border-radius: 50px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.entreprise-details .btn-edit,
+.btn-cancel {
+  background-color: transparent;
+  border: 1px solid #99afff;
+  color: #99afff;
+}
+
+.entreprise-details .btn-edit:hover,
+.btn-cancel:hover {
+  background-color: #99afff;
+  color: var(--texte-button);
+  transform: translateY(-2px);
+}
+
+.btn-delete {
+  background-color: transparent;
+  border: 1px solid #ff8585;
+  color: #ff8585;
+}
+
+.btn-delete:hover {
+  background-color: #ff8585;
+  color: var(--texte-button);
+  transform: translateY(-2px);
+}
+
+.btn-submit {
+  background-color: transparent;
+  border: 1px solid #26cc55;
+  color: #26cc55;
+}
+.btn-submit:hover {
+  background-color: #26cc55;
+  color: var(--texte-button);
+  transform: translateY(-2px);
+}
+
+.entreprise-details .btn-cancel:hover {
+  background-color: #5a6268;
+}
+
+.entreprise-details .btn-submit:hover {
+  background-color: #0056b3;
+}
+
+/* Styles pour les modals */
+.modal {
+  display: none; /* Caché par défaut */
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: var(--couleur-container);
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 80%;
+  max-width: 500px;
+  position: relative;
+}
+
+.close {
+  position: absolute;
+  right: 1rem;
+  top: 0.5rem;
+  color: #aaa;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+}
+
+.warning {
+  color: #dc3545;
+  font-weight: bold;
+  margin: 1rem 0;
+}
+
+/* Styles pour le formulaire dans le modal */
+.form-entreprise {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.form-group label {
+  font-weight: 500;
+}
+
+.form-group input,
+.form-group textarea {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+#commentaire {
+  width: auto;
+  margin: 0 50px;
+}
+
+#rating-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.form-group small {
+  font-size: 12px;
+  color: #666;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+/* Boîtes d'informations */
+
+.info-box {
+  background-color: var(--couleur-container);
+  border-radius: 8px;
+  padding: 20px;
+  border: 1px solid var(--couleur-bordure-container);
+}
+
+/* Système de notation */
+.entreprise-details .rating-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.entreprise-details .rating-stars {
+  display: flex;
+  gap: 5px;
+  font-size: 24px;
+}
+
+.entreprise-details .star {
+  color: #ddd;
+}
+
+.entreprise-details .star.full {
+  color: var(--couleur-orange);
+}
+
+.entreprise-details .star.half {
+  position: relative;
+  color: #ddd;
+}
+
+.entreprise-details .star.half::before {
+  content: "★";
+  position: absolute;
+  color: var(--couleur-avis);
+  width: 50%;
+  overflow: hidden;
+}
+
+.entreprise-details .rating-value {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.entreprise-details .rating-count {
+  font-size: 14px;
+  color: #666;
+}
+
+/* Sections d'entreprise */
+.entreprise-details .entreprise-section {
+  background-color: var(--couleur-container);
+  border-radius: 8px;
+  padding: 25px;
+  border: 1px solid var(--couleur-bordure-container);
+}
+
+.entreprise-details .entreprise-section h2 {
+  font-size: 24px;
+  color: var(--primary-color);
+  margin-top: 0;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+/* Section contact */
+.entreprise-details .contact-section {
+  margin-bottom: 20px;
+}
+
+.entreprise-details .contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.entreprise-details .contact-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.entreprise-details .contact-item strong {
+  font-weight: bold;
+}
+
+/* Section offres */
+.entreprise-details .offres-section {
+  margin-bottom: 20px;
+}
+
+.entreprise-details .no-offres {
+  font-style: italic;
+  color: #666;
+}
+
+.entreprise-details .offres-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.entreprise-details .offre-card {
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 20px;
+  background-color: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.entreprise-details .offre-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.entreprise-details .offre-card h3 {
+  font-size: 18px;
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: var(--primary-color);
+}
+
+.entreprise-details .offre-dates {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.entreprise-details .offre-desc {
+  margin-bottom: 10px;
+}
+
+.entreprise-details .offre-remuneration {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.entreprise-details .offre-candidatures {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 15px;
+}
+
+.entreprise-details .btn-voir {
+  display: inline-block;
+  padding: 8px 16px;
+  background-color: var(--primary-color);
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.entreprise-details .btn-voir:hover {
+  background-color: var(--primary-dark);
+}
+
+/* Section avis */
+.entreprise-details .avis-section {
+  margin-bottom: 20px;
+}
+
+.entreprise-details .no-avis {
+  font-style: italic;
+  color: #666;
+}
+
+.entreprise-details .add-avis h3 {
+  font-size: 18px;
+  margin-bottom: 15px;
+}
+
+.entreprise-details .avis-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.entreprise-details .rating-input {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.entreprise-details .stars-input {
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.entreprise-details .stars-input input {
+  display: none;
+}
+
+.entreprise-details .stars-input label {
+  font-size: 25px;
+  color: #ddd;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.entreprise-details .stars-input input:checked ~ label,
+.entreprise-details .stars-input label:hover ~ label,
+.entreprise-details .stars-input label:hover,
+.entreprise-details .stars-input label.active {
+  color: var(--couleur-avis);
+}
+
+.entreprise-details .star-rating {
+  display: flex;
+  align-items: center;
+}
+
+.entreprise-details .star {
+  font-size: 30px;
+  color: #ddd;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.entreprise-details .star.active {
+  color: var(--couleur-orange);
+}
+
+.entreprise-details #rating-text {
+  margin-left: 10px;
+  font-size: 14px;
+}
+
+.entreprise-details #submit-rating {
+  display: flex;
+  padding: 10px 20px;
+  color: var(--couleur-texte);
+  background-color: transparent;
+  border: 1px solid var(--couleur-button);
+  border-radius: 50px;
+  cursor: pointer;
+  font-weight: bold;
+  opacity: 0.5;
+  width: fit-content;
+  pointer-events: none;
+}
+
+.entreprise-details #submit-rating.active {
+  opacity: 1;
+  pointer-events: auto;
+  background-color: var(--couleur-button);
+  color: var(--texte-button);
+}
+
+.entreprise-details #submit-rating.active:hover {
+  background-color: var(--couleur-button);
+}
+
+.entreprise-details .btn-submit {
+  align-self: flex-start;
+  padding: 10px 20px;
+  background-color: transparent;
+  border: 1px solid var(--couleur-button);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.entreprise-details .btn-submit:hover {
+  background-color: transparent;
+  border: 1px solid var(--couleur-button);
+}
+
+/* Nouvelle section de distribution des notes */
+.entreprise-details .rating-distribution {
+  background-color: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.entreprise-details .rating-distribution h3 {
+  font-size: 18px;
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: var(--primary-color);
+}
+
+.entreprise-details .rating-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.entreprise-details .rating-bar {
+  display: grid;
+  grid-template-columns: 40px 1fr 40px;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.entreprise-details .rating-label {
+  font-size: 14px;
+  text-align: center;
+  color: #333;
+  font-weight: bold;
+}
+
+.entreprise-details .bar-container {
+  background-color: #f0f0f0;
+  height: 12px;
+  border-radius: 6px;
+  overflow: hidden;
+  width: 100%;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.entreprise-details .bar {
+  height: 100%;
+  background-color: var(--couleur-avis);
+  border-radius: 6px;
+  transition: width 0.5s ease-in-out;
+  min-width: 5px;
+}
+
+.entreprise-details .rating-count {
+  font-size: 14px;
+  color: #666;
+  text-align: right;
+  font-weight: bold;
+}
+
+.entreprise-details .avis-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.entreprise-details .avis-item {
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 20px;
+  background-color: white;
+}
+
+.entreprise-details .avis-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.entreprise-details .avis-user {
+  font-weight: 500;
+}
+
+.entreprise-details .avis-rating {
+  display: flex;
+  gap: 2px;
+}
+
+.entreprise-details .avis-rating .star {
+  font-size: 16px;
+}
+
+.entreprise-details .avis-content p {
+  margin: 0;
+  white-space: pre-line;
+}
+
+/* Styles pour la liste des évaluations */
+.evaluations-list {
+  margin-top: 30px;
+}
+
+.evaluations-list h3 {
+  font-size: 20px;
+  margin-bottom: 15px;
+  color: var(--primary-color);
+}
+
+.evaluation-item {
+  background-color: var(--couleur-container);
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.evaluation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.user-info {
+  font-weight: 500;
+  color: var(--primary-color);
+}
+
+.rating-stars {
+  display: flex;
+}
+
+.rating-stars .star {
+  color: #00000066;
+  font-size: 18px;
+}
+
+.rating-stars .star.filled {
+  color: var(--couleur-avis);
+}
+
+.evaluation-comment {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #eee;
+}
+
+.evaluation-comment p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.no-evaluations {
+  font-style: italic;
+  color: #777;
+  text-align: center;
+  margin: 20px 0;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .entreprise-details {
+    margin: 1rem auto;
+  }
+
+  .entreprise-details .offres-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .entreprise-details .rating-input {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .entreprise-details .rating-bar {
+    grid-template-columns: 40px 1fr 30px;
+  }
+
+  .entreprise-details .avis-header {
+    flex-direction: column;
+    gap: 5px;
+  }
+}

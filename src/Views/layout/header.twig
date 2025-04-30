@@ -1,0 +1,35 @@
+<!-- filepath: /workspaces/Web_Rattrapage/src/Views/layout/header.twig -->
+<header>
+    <div class="header-container">
+        <!-- Logo -->
+        <div class="logo-container">
+            <img src="/static/assets/img/logo.png" alt="Logo de Stock O' CESI" class="logo">
+        </div>
+
+        <!-- Slogan -->
+        <h4>Gérez vos stocks tout au long de l'année</h4>
+
+        <!-- Menu burger -->
+        <div class="burger-menu">
+            <span class="burger-icon"></span>
+            <nav class="nav-menu">
+                <ul>
+                    {% if user is not defined %}
+                        <!-- Lien pour les utilisateurs non connectés -->
+                        <li><a href="/connexion">Connexion</a></li>
+                    {% else %}
+                        <!-- Lien pour les utilisateurs connectés -->
+                        <li><a href="/magasins">Magasins partenaires</a></li>
+                        {% if user.role == 'admin' %}
+                            <li><a href="/gestion">Journal d'activité</a></li>
+                        {% endif %}*
+                        {% if user defined %}
+                            <li><a href="/deconnexion">Déconnexion</a></li>
+                        {% endif %}
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        <script src="/static/js/burger.js"></script>
+    </div>
+</header>
