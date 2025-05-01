@@ -22,7 +22,10 @@ class Controller {
             'cache' => false, // Désactiver le cache pour le développement
         ]);
     }
-
+    public function redirect($url) {
+        header("Location: $url");
+        exit;
+    }
     /**
      * Rendu d'une vue avec Twig.
      *

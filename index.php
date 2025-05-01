@@ -5,16 +5,16 @@
  */
 
 require "vendor/autoload.php";
+// Définir la constante ROOT_PATH pour les chemins absolus
+define('ROOT_PATH', __DIR__);
 
 use App\Controllers\TaskController;
+use App\Controllers\UserController;
 
 // Activer l'affichage des erreurs pour le débogage
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-
-// Définir la constante ROOT_PATH pour les chemins absolus
-define('ROOT_PATH', __DIR__);
 
 // Get the URI from the request
 $uri = $_GET['uri'] ?? '/';
@@ -22,42 +22,41 @@ $uri = $_GET['uri'] ?? '/';
 // Normalize the URI (remove leading/trailing slashes)
 $uri = trim($uri, '/');
 
-// Initialize the controller
-$controller = new TaskController();
+// Initialize the controllers
+$taskController = new TaskController();
+$userController = new UserController();
 
 // Route the request
 switch ($uri) {
     case '':
-        // Call the welcomePage method of the controller
-        $controller->welcomePage();
+        // Call the welcomePage method of the TaskController
+        $taskController->welcomePage();
         break;
     case 'add_task':
-        // Call the addTask method of the controller
-        $controller->addTask();
+        $taskController->addTask();
         break;
     case 'check_task':
-        // Call the checkTask method of the controller
-        $controller->checkTask();
+        $taskController->checkTask();
         break;
     case 'history':
-        // Call the logPage method of the controller
-        $controller->logPage();
+        $taskController->logPage();
         break;
     case 'uncheck_task':
-        // Call the uncheckTask method of the controller
-        $controller->uncheckTask();
+        $taskController->uncheckTask();
         break;
     case 'delete_task':
-        // Call the deleteTask method of the controller
-        $controller->deleteTask();
+        $taskController->deleteTask();
         break;
     case 'about':
-        // Call the aboutPage method of the controller
-        $controller->aboutPage();
+        $taskController->aboutPage();
         break;
     case 'login':
-        // Call the loginPage method of the controller
-        $controller->loginPage();
+        // Call the loginPage method of the UserController
+        $userController->loginPage();
+        break;
+    case 'logout':
+        // Call the logout method of the UserController
+        $userController->logout();
         break;
     default:
         // Return a 404 error for unknown routes

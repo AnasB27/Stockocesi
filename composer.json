@@ -1,5 +1,5 @@
 {
-    "name": "cesi/myt_todoo",
+    "name": "cesi/stockocesi",
     "type": "project",
     "require": {
         "twig/twig": "^3.16"
@@ -14,8 +14,8 @@
     },
     "authors": [
         {
-            "name": "Ada Lovelace",
-            "email": "alovelace@cesi.fr"
+            "name": "Anas BAZI",
+            "email": "anas.bazi@viacesi.fr"
         }
     ]
 }

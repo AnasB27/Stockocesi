@@ -1,6 +1,8 @@
 <?php
-require_once ROOT_PATH . '/src/controllers/Controller.php';
-require_once ROOT_PATH . '/src/models/UserModel.php';
+namespace App\Controllers;
+use App\Models\UserModel;
+use App\Controllers\Controller;
+
 
 class UserController extends Controller {
     private $userModel;
@@ -10,7 +12,7 @@ class UserController extends Controller {
         $this->userModel = new UserModel();
     }
     public function loginPage() {
-        echo $this->templateEngine->render('account/login.twig', [
+        echo $this->templateEngine->render('/stockocesi/templates/account/login.twig', [
             'pageTitle' => 'Connexion'
         ]);
     }
