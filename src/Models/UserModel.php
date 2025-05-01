@@ -18,7 +18,7 @@ class UserModel {
      * @return array|null Les informations de l'utilisateur si l'authentification réussit, sinon null.
      */
     public function authenticate($email, $password) {
-        $sql = "SELECT * FROM utilisateurs WHERE email = ?";
+        $sql = "SELECT * FROM user WHERE email = ?";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$email]);
 
@@ -26,11 +26,11 @@ class UserModel {
 
         if ($user) {
             // Vérifie le mot de passe haché
-            if (password_verify($password, $user['mot_de_passe'])) {
+            if (password_verify($password, $user['password'])) {
                 return $user;
             } 
             // Si le mot de passe n'est pas haché, le hacher et le mettre à jour
-            else if ($password === $user['mot_de_passe']) {
+            else if ($password === $user['password']) {
                 $this->updatePasswordHash($user['id'], $password);
                 return $user;
             }
@@ -49,7 +49,7 @@ class UserModel {
     public function updatePasswordHash($userId, $password) {
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-        $sql = "UPDATE utilisateurs SET mot_de_passe = ? WHERE id = ?";
+        $sql = "UPDATE user SET password = ? WHERE id = ?";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([$hashedPassword, $userId]);
     }
@@ -61,7 +61,7 @@ class UserModel {
      * @return array|null Les informations de l'utilisateur ou null si non trouvé.
      */
     public function getUserById($userId) {
-        $sql = "SELECT * FROM utilisateurs WHERE id = ?";
+        $sql = "SELECT * FROM user WHERE id = ?";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$userId]);
 
@@ -75,7 +75,7 @@ class UserModel {
      * @return string|null Le rôle de l'utilisateur ou null si non trouvé.
      */
     public function getUserRole($userId) {
-        $sql = "SELECT role FROM utilisateurs WHERE id = ?";
+        $sql = "SELECT role FROM user WHERE id = ?";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$userId]);
 
@@ -84,17 +84,29 @@ class UserModel {
     }
 
     /**
-     * Récupère les permissions d'un utilisateur.
+     * Récupère les employés ou gestionnaires liés à un magasin.
+     *
+     * @param int $storeId L'ID du magasin.
+     * @return array|null Les utilisateurs liés au magasin ou null si aucun trouvé.
+     */
+    public function getUsersByStore($storeId) {
+        $sql = "SELECT * FROM user WHERE store_id = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$storeId]);
+
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Lie un utilisateur (employé ou gestionnaire) à un magasin.
      *
      * @param int $userId L'ID de l'utilisateur.
-     * @return array|null Les permissions de l'utilisateur ou null si non trouvé.
+     * @param int $storeId L'ID du magasin.
+     * @return bool True si l'opération a réussi, sinon false.
      */
-    public function getUserPermissions($userId) {
-        $sql = "SELECT permissions FROM utilisateurs WHERE id = ?";
+    public function assignUserToStore($userId, $storeId) {
+        $sql = "UPDATE user SET store_id = ? WHERE id = ?";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([$userId]);
-
-        $result = $stmt->fetch();
-        return $result['permissions'] ? explode(',', $result['permissions']) : null;
+        return $stmt->execute([$storeId, $userId]);
     }
 }
