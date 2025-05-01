@@ -13,8 +13,8 @@
     <main>
         <h1>Journal d'activité</h1>
         <div class="log-container">
-            <form method="POST" action="/stockocesi/admin/clear-logs" class="clear-form">
-                <button type="submit" class="button-clear">Effacer l'historique</button>
+            <form method="POST" action="/stockocesi/admin/clear-logs" class="clear-form" id="clearLogsForm">
+                <button type="button" class="button-clear" onclick="confirmClearLogs()">Effacer l'historique</button>
             </form>
 
             <div class="log-list">
@@ -47,5 +47,6 @@
     </main>
 
     {% include 'layout/footer.twig' %}
+    <script src="/stockocesi/static/js/clear-log.js"></script>
 </body>
 </html>
