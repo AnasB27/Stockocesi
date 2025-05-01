@@ -9,7 +9,11 @@ class UserController extends Controller {
         parent::__construct();
         $this->userModel = new UserModel();
     }
-
+    public function loginPage() {
+        echo $this->templateEngine->render('account/login.twig', [
+            'pageTitle' => 'Connexion'
+        ]);
+    }
     /**
      * Gère la connexion de l'utilisateur.
      */

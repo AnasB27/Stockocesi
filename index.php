@@ -13,6 +13,9 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+// Définir la constante ROOT_PATH pour les chemins absolus
+define('ROOT_PATH', __DIR__);
+
 // Get the URI from the request
 $uri = $_GET['uri'] ?? '/';
 

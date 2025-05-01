@@ -19,11 +19,7 @@ class TaskController extends Controller {
             'pageTitle' => 'Accueil - Gestion des stocks'
         ]);
     }
-    public function loginPage() {
-        echo $this->templateEngine->render('account/login.twig', [
-            'pageTitle' => 'Connexion'
-        ]);
-    }
+    
     /**
      * Affiche le journal d'action avec la liste des tâches.
      */
