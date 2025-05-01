@@ -11,6 +11,40 @@ class UserModel {
     }
 
     /**
+     * Vérifie si un email existe déjà dans la base de données
+     *
+     * @param string $email L'email à vérifier
+     * @return bool True si l'email existe, false sinon
+     */
+    public function emailExists($email) {
+        $sql = "SELECT COUNT(*) FROM user WHERE email = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$email]);
+        return $stmt->fetchColumn() > 0;
+    }
+
+    /**
+     * Crée un nouvel utilisateur
+     *
+     * @param array $userData Les données de l'utilisateur
+     * @return bool True si la création a réussi, false sinon
+     */
+    public function createUser($userData) {
+        $sql = "INSERT INTO user (name, firstname, email, password, store_id, role) 
+                VALUES (:name, :firstname, :email, :password, :store_id, :role)";
+        
+        $stmt = $this->db->prepare($sql);
+        
+        return $stmt->execute([
+            'name' => $userData['name'],
+            'firstname' => $userData['firstname'],
+            'email' => $userData['email'],
+            'password' => $userData['password'],
+            'store_id' => $userData['store_id'],
+            'role' => $userData['role']
+        ]);
+    }
+    /**
      * Authentifie un utilisateur avec son email et son mot de passe.
      *
      * @param string $email L'email de l'utilisateur.

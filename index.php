@@ -11,6 +11,7 @@ define('ROOT_PATH', __DIR__);
 use App\Controllers\TaskController;
 use App\Controllers\UserController;
 use App\Controllers\LogController;
+use App\Controllers\AddAccountController;
 
 // Activer l'affichage des erreurs pour le débogage
 ini_set('display_errors', 1);
@@ -32,6 +33,7 @@ $uri = trim($uri, '/');
 $taskController = new TaskController();
 $userController = new UserController();
 $logController = new LogController();
+$addAccountController = new AddAccountController();
 
 // Route the request
 switch ($uri) {
@@ -58,6 +60,14 @@ switch ($uri) {
         break;
     case 'about':
         $taskController->aboutPage();
+        break;
+    case 'admin/add-account':
+        $addAccountController = new AddAccountController();
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $addAccountController->addAccount();
+        } else {
+            $addAccountController->showAddAccount();
+        }
         break;
     case 'login':
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
