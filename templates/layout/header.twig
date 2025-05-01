@@ -15,24 +15,28 @@
                 <ul>
                     {% if user is not defined %}
                         <!-- Lien pour les utilisateurs non connectés -->
-                        <li><a href="/login">Connexion</a></li>
+                        <li><a href="/stockocesi/login">Connexion</a></li>
                     {% else %}
-                        <!-- Lien pour les utilisateurs connectés -->
-                        <li><a href="/store">Magasins partenaires</a></li>
-                        
-                        {% if user.role == 'admin' %}
-                            <li><a href="/admin/log">Journal d'activité</a></li>
+                        {% if current_page == 'login' %}
+                            <li><a href="/stockocesi/accueil">Accueil</a></li>
+                        {% else %}
+                            <!-- Lien pour les utilisateurs connectés -->
+                            <li><a href="/stockocesi/store">Magasins partenaires</a></li>
                             
-                            {% if current_page == 'log' %}
-                                <!-- Liens supplémentaires pour les administrateurs sur la page du journal -->
-                                <li><a href="/admin/add-account">Ajouter un compte</a></li>
-                                <li><a href="/admin/manage-accounts">Gérer les comptes</a></li>
-                                <li><a href="/admin/add-store">Ajouter un magasin</a></li>
-                                <li><a href="/admin/manage-stores">Gérer les magasins</a></li>
+                            {% if user.role == 'Admin' %}
+                                <li><a href="/stockocesi/admin/log">Journal d'activité</a></li>
+                                
+                                {% if current_page == 'log' %}
+                                    <!-- Liens supplémentaires pour les administrateurs sur la page du journal -->
+                                    <li><a href="/stockocesi/admin/add-account">Ajouter un compte</a></li>
+                                    <li><a href="/stockocesi/admin/manage-accounts">Gérer les comptes</a></li>
+                                    <li><a href="/stockocesi/admin/add-store">Ajouter un magasin</a></li>
+                                    <li><a href="/stockocesi/admin/manage-stores">Gérer les magasins</a></li>
+                                {% endif %}
                             {% endif %}
+                            
+                            <li><a href="/stockocesi/logout">Déconnexion</a></li>
                         {% endif %}
-                        
-                        <li><a href="/logout">Déconnexion</a></li>
                     {% endif %}
                 </ul>
             </nav>

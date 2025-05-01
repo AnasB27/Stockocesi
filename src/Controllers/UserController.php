@@ -21,7 +21,7 @@ class UserController extends Controller {
         }
 
         if (!isset($_SESSION['user_id'])) {
-            $this->redirect('/login');
+            $this->redirect('login');
         }
     }
 
