@@ -16,6 +16,11 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+// Démarrer la session si elle n'est pas déjà démarrée
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 // Get the URI from the request
 $uri = $_GET['uri'] ?? '/';
 
@@ -29,7 +34,6 @@ $userController = new UserController();
 // Route the request
 switch ($uri) {
     case '':
-        // Call the welcomePage method of the TaskController
         $taskController->welcomePage();
         break;
     case 'add_task':
@@ -51,15 +55,12 @@ switch ($uri) {
         $taskController->aboutPage();
         break;
     case 'login':
-        // Call the loginPage method of the UserController
-        $userController->loginPage();
+        $userController->login();
         break;
     case 'logout':
-        // Call the logout method of the UserController
         $userController->logout();
         break;
     default:
-        // Return a 404 error for unknown routes
         http_response_code(404);
         echo '404 Not Found';
         break;

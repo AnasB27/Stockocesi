@@ -12,6 +12,10 @@ CREATE TABLE user (
     creation_date DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Insert a default admin account
+INSERT INTO user (name, email, password, role)
+VALUES ('Anas', 'anas.bazi@viacesi.fr', 'Rewal136?', 'Admin');
+
 -- Action logs table (Fx15)
 CREATE TABLE action_log (
     id INT AUTO_INCREMENT PRIMARY KEY,

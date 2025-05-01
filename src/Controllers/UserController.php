@@ -1,8 +1,7 @@
 <?php
 namespace App\Controllers;
-use App\Models\UserModel;
-use App\Controllers\Controller;
 
+use App\Models\UserModel;
 
 class UserController extends Controller {
     private $userModel;
@@ -11,11 +10,26 @@ class UserController extends Controller {
         parent::__construct();
         $this->userModel = new UserModel();
     }
+
+    /**
+     * Vérifie si l'utilisateur est connecté.
+     * Si non, redirige vers la page de connexion.
+     */
+    private function ensureAuthenticated() {
+        if (!isset($_SESSION['user_id'])) {
+            $this->redirect('/login');
+        }
+    }
+
+    /**
+     * Affiche la page de connexion.
+     */
     public function loginPage() {
-        echo $this->templateEngine->render('/stockocesi/templates/account/login.twig', [
+        echo $this->templateEngine->render('account/login.twig', [
             'pageTitle' => 'Connexion'
         ]);
     }
+
     /**
      * Gère la connexion de l'utilisateur.
      */
@@ -47,7 +61,7 @@ class UserController extends Controller {
                 // Rediriger en fonction du rôle
                 if ($user['role'] === 'Admin') {
                     $this->redirect('/admin/log');
-                } elseif ($user['role'] === 'Manager' || $user['role'] === 'Employee') {
+                } elseif (in_array($user['role'], ['Manager', 'Employee'])) {
                     $this->redirect('/store/accueil');
                 } else {
                     $this->redirect('/accueil');
@@ -58,7 +72,7 @@ class UserController extends Controller {
         }
 
         // Afficher la page de connexion
-        echo $this->render('login', [
+        echo $this->render('account/login', [
             'error' => $error,
             'pageTitle' => 'Connexion - Stock Management'
         ]);
@@ -92,11 +106,14 @@ class UserController extends Controller {
     }
 
     /**
+     * Exemple de méthode nécessitant une authentification.
      * Affiche les employés ou gestionnaires liés à un magasin.
      *
      * @param int $storeId L'ID du magasin.
      */
     public function showUsersByStore($storeId) {
+        $this->ensureAuthenticated(); // Vérifie si l'utilisateur est connecté
+
         $users = $this->userModel->getUsersByStore($storeId);
 
         echo $this->render('store/users', [
@@ -106,12 +123,15 @@ class UserController extends Controller {
     }
 
     /**
+     * Exemple de méthode nécessitant une authentification.
      * Assigne un utilisateur (employé ou gestionnaire) à un magasin.
      *
      * @param int $userId L'ID de l'utilisateur.
      * @param int $storeId L'ID du magasin.
      */
     public function assignUserToStore($userId, $storeId) {
+        $this->ensureAuthenticated(); // Vérifie si l'utilisateur est connecté
+
         if ($this->userModel->assignUserToStore($userId, $storeId)) {
             echo "Utilisateur assigné au magasin avec succès.";
         } else {
