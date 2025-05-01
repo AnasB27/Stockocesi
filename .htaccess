@@ -1,0 +1,19 @@
+# Activer le moteur de réécriture
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Ne pas réécrire les requêtes pour les fichiers existants
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^ - [L]
+
+    # Ne pas réécrire les requêtes pour les répertoires existants
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Ne pas réécrire les requêtes pour les fichiers dans /static
+    RewriteCond %{REQUEST_URI} ^/static/
+    RewriteRule ^ - [L]
+
+    # Réécrire toutes les autres requêtes vers index.php
+    RewriteRule ^ index.php [L]
+</IfModule>
