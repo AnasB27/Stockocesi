@@ -38,6 +38,9 @@ switch ($uri) {
     case '':
         $taskController->welcomePage();
         break;
+    case 'accueil':
+        $taskController->accueilPage();
+        break;
     case 'add_task':
         $taskController->addTask();
         break;
