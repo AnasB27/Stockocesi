@@ -17,12 +17,14 @@ INSERT INTO user (name, email, password, role)
 VALUES ('Anas', 'anas.bazi@viacesi.fr', 'Rewal136?', 'Admin');
 
 -- Action logs table (Fx15)
-CREATE TABLE action_log (
+CREATE TABLE IF NOT EXISTS log (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    action TEXT NOT NULL,
-    action_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
+    user_id INT,
+    user_name VARCHAR(100),
+    action VARCHAR(255) NOT NULL,
+    details TEXT,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE SET NULL
 );
 
 -- Categories table (Fx4)

@@ -43,45 +43,37 @@ class UserController extends Controller {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-
-        // Si l'utilisateur est déjà connecté, redirigez-le vers la page d'accueil
-        if (isset($_SESSION['user_id'])) {
-            $this->redirect('/accueil');
-        }
-
-        $error = '';
+    
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $email = $_POST['email'] ?? '';
             $password = $_POST['password'] ?? '';
-
-            // Authentification de l'utilisateur
+    
             $user = $this->userModel->authenticate($email, $password);
-
+    
             if ($user) {
-                // Stocker les informations de l'utilisateur dans la session
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['user_name'] = $user['name'];
-                $_SESSION['user_role'] = $user['role']; // Exemple : 'Admin', 'Manager', 'Employee'
-                $_SESSION['store_id'] = $user['store_id'] ?? null; // Magasin lié (si applicable)
-
-                // Rediriger en fonction du rôle
+                $_SESSION['user_role'] = $user['role'];
+                $_SESSION['store_id'] = $user['store_id'] ?? null;
+    
+                // Rediriger en fonction du rôle (correction du chemin)
                 if ($user['role'] === 'Admin') {
-                    $this->redirect('/admin/log');
+                    $this->redirect('admin/log'); // Enlever le slash initial
                 } elseif (in_array($user['role'], ['Manager', 'Employee'])) {
-                    $this->redirect('/store/accueil');
+                    $this->redirect('store/accueil');
                 } else {
-                    $this->redirect('/accueil');
+                    $this->redirect('accueil');
                 }
             } else {
-                $error = 'Email ou mot de passe incorrect.';
+                echo $this->render('account/login', [
+                    'pageTitle' => 'Connexion',
+                    'current_page' => 'login',
+                    'error' => 'Email ou mot de passe incorrect'
+                ]);
             }
+        } else {
+            $this->loginPage();
         }
-
-        // Afficher la page de connexion avec un message d'erreur (le cas échéant)
-        echo $this->render('account/login', [
-            'error' => $error,
-            'pageTitle' => 'Connexion - Stock Management'
-        ]);
     }
 
     /**
@@ -108,7 +100,7 @@ class UserController extends Controller {
         session_destroy();
 
         // Rediriger vers la page de connexion
-        $this->redirect('/login');
+        $this->redirect('login');
     }
 
     /**

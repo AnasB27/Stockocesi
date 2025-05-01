@@ -10,6 +10,7 @@ define('ROOT_PATH', __DIR__);
 
 use App\Controllers\TaskController;
 use App\Controllers\UserController;
+use App\Controllers\LogController;
 
 // Activer l'affichage des erreurs pour le débogage
 ini_set('display_errors', 1);
@@ -30,6 +31,7 @@ $uri = trim($uri, '/');
 // Initialize the controllers
 $taskController = new TaskController();
 $userController = new UserController();
+$logController = new LogController();
 
 // Route the request
 switch ($uri) {
@@ -64,6 +66,13 @@ switch ($uri) {
     case 'logout':
         $userController->logout();
         break;
+        case 'admin/log':
+            if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['clear_logs'])) {
+                $logController->clearLogs();
+            } else {
+                $logController->showLog();
+            }
+            break;
     default:
         http_response_code(404);
         echo '404 Not Found';
