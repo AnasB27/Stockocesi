@@ -1,23 +1,20 @@
-<!-- filepath: /workspaces/Web_Rattrapage/src/Views/accueil/accueil.twig -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stock O' CESI</title>
+    <title>{{ pageTitle }}</title>
     <link rel="stylesheet" href="/stockocesi/static/css/accueil.css">
     <link rel="stylesheet" href="/stockocesi/static/css/main.css">
 </head>
 <body>
-    
     {% include 'layout/header.twig' %}
 
     <main>
-        
-        {% if user is defined %}
-            <button class="main-button" onclick="window.location.href='/stock'">Mon stock</button>
+        {% if session.user_id is defined %}
+            <button class="main-button" onclick="window.location.href='/stockocesi/store'">Mon stock</button>
         {% else %}
-            <button class="main-button" onclick="window.location.href='/login'">Connexion</button>
+            <button class="main-button" onclick="window.location.href='/stockocesi/login'">Connexion</button>
         {% endif %}
     
         <section>
@@ -40,6 +37,5 @@
     </main>
 
     {% include 'layout/footer.twig' %}
-
 </body>
 </html>
