@@ -8,22 +8,23 @@ require "vendor/autoload.php";
 
 use App\Controllers\TaskController;
 
-// Initialize Twig
-$loader = new \Twig\Loader\FilesystemLoader(__DIR__ . '/templates');
-$twig = new \Twig\Environment($loader, [
-    'debug' => true,
-    'cache' => false // Disable cache for development
-]);
+// Activer l'affichage des erreurs pour le débogage
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
 // Get the URI from the request
 $uri = $_GET['uri'] ?? '/';
+
+// Normalize the URI (remove leading/trailing slashes)
+$uri = trim($uri, '/');
 
 // Initialize the controller
 $controller = new TaskController();
 
 // Route the request
 switch ($uri) {
-    case '/':
+    case '':
         // Call the welcomePage method of the controller
         $controller->welcomePage();
         break;
@@ -42,6 +43,10 @@ switch ($uri) {
     case 'uncheck_task':
         // Call the uncheckTask method of the controller
         $controller->uncheckTask();
+        break;
+    case 'delete_task':
+        // Call the deleteTask method of the controller
+        $controller->deleteTask();
         break;
     case 'about':
         // Call the aboutPage method of the controller
