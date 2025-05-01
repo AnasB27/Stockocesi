@@ -1,21 +1,61 @@
 <?php
+
 namespace App\Controllers;
 
+use App\Models\Database;
+
 /**
- * The base controller class for all controllers in the application.
+ * Controller : Un contrôleur générique pour gérer les fonctionnalités principales.
  */
-abstract class Controller {
-    /**
-     * The model associated with the controller.
-     *
-     * @var Model null
-     */
-    protected $model = null;
+class Controller {
+    protected $db;
+
+    public function __construct() {
+        // Initialiser la connexion à la base de données
+        $this->db = Database::getInstance()->getConnection();
+    }
 
     /**
-     * The template engine used by the controller.
-     *
-     * @var  \Twig\Environment null
+     * Affiche la page d'accueil.
      */
-    protected $templateEngine = null;
+    public function index() {
+        echo $this->render('index', [
+            'pageTitle' => 'Accueil - Stock Management'
+        ]);
+    }
+
+    /**
+     * Gère les erreurs 404.
+     */
+    public function notFound() {
+        http_response_code(404);
+        echo $this->render('errors/404', [
+            'pageTitle' => 'Page non trouvée'
+        ]);
+    }
+
+    /**
+     * Redirige vers une autre URL.
+     *
+     * @param string $url L'URL vers laquelle rediriger.
+     */
+    protected function redirect($url) {
+        header("Location: $url");
+        exit;
+    }
+
+    /**
+     * Rendu d'une vue avec Twig.
+     *
+     * @param string $template Le nom du fichier de template.
+     * @param array $data Les données à passer au template.
+     * @return string Le rendu HTML.
+     */
+    protected function render($template, $data = []) {
+        if ($this->templateEngine === null) {
+            throw new \Exception("Le moteur de template n'est pas configuré.");
+        }
+
+        return $this->templateEngine->render($template . '.twig', $data);
+    }
 }

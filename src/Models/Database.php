@@ -25,7 +25,7 @@ class Database {
         $servername = $_ENV['DB_HOST'] ?? 'localhost';
         $username = $_ENV['DB_USER'] ?? 'root';
         $password = $_ENV['DB_PASS'] ?? '';
-        $dbname = $_ENV['DB_NAME'] ?? 'WebRattrapage';
+        $dbname = $_ENV['DB_NAME'] ?? 'stockocesi';
 
         try {
             // Create a new PDO connection

@@ -4,48 +4,80 @@ namespace App\Controllers;
 use App\Models\TaskModel;
 
 class TaskController extends Controller {
+    private $model;
+    private $templateEngine;
 
     public function __construct($templateEngine) {
+        parent::__construct();
         $this->model = new TaskModel();
         $this->templateEngine = $templateEngine;
     }
 
+    /**
+     * Affiche la page d'accueil avec la liste des tâches.
+     */
     public function welcomePage() {
-        // TODO: Retrieve the list of tasks from the model
+        $tasks = $this->model->getAllTasks(); // Récupère toutes les tâches
         echo $this->templateEngine->render('todo.twig.html', ['tasks' => $tasks]);
     }
 
+    /**
+     * Ajoute une nouvelle tâche.
+     */
     public function addTask() {
-        // TODO: First, we check if the 'task' parameter is present in the POST request
-        // TODO: If not, we redirect the user to the home page: header('Location: /');
-
-        // TODO: Then, we retrieve the value of the 'task' parameter
-        // TODO: We call the addTask method of the model with the task as a parameter
-        // TODO: Finally, we redirect the user to the home page: header('Location: /');
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['task'])) {
+            $task = $_POST['task'];
+            $this->model->addTask($task); // Ajoute la tâche via le modèle
+            header('Location: /'); // Redirige vers la page d'accueil
+            exit;
+        } else {
+            header('Location: /'); // Redirige si le paramètre 'task' est manquant
+            exit;
+        }
     }
 
+    /**
+     * Marque une tâche comme terminée.
+     */
     public function checkTask() {
-        // TODO: First, we check if the 'id' parameter is present in the POST request
-        // TODO: If not, we redirect the user to the home page
-
-        // TODO: Then, we retrieve the value of the 'id' parameter
-        // TODO: We call the checkTask method of the model with the id as a parameter
-        // TODO: Finally, we redirect the user to the home page
-
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
+            $taskId = (int) $_POST['id'];
+            $this->model->checkTask($taskId); // Marque la tâche comme terminée
+            header('Location: /'); // Redirige vers la page d'accueil
+            exit;
+        } else {
+            header('Location: /'); // Redirige si le paramètre 'id' est manquant
+            exit;
+        }
     }
 
-    public function historyPage() {
-        // TODO: Retrieve the list of tasks from the model
-        // TDOO: Render the history.twig.html template with the list of tasks
-    }
-
+    /**
+     * Marque une tâche comme non terminée.
+     */
     public function uncheckTask() {
-        // It's the same as the checkTask method, but we call the uncheckTask method of the model...
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
+            $taskId = (int) $_POST['id'];
+            $this->model->uncheckTask($taskId); // Marque la tâche comme non terminée
+            header('Location: /'); // Redirige vers la page d'accueil
+            exit;
+        } else {
+            header('Location: /'); // Redirige si le paramètre 'id' est manquant
+            exit;
+        }
     }
 
+    /**
+     * Affiche l'historique des tâches.
+     */
+    public function historyPage() {
+        $tasks = $this->model->getAllTasks(); // Récupère toutes les tâches
+        echo $this->templateEngine->render('history.twig.html', ['tasks' => $tasks]);
+    }
+
+    /**
+     * Affiche la page "À propos".
+     */
     public function aboutPage() {
-        // TODO: Render the about.twig.html template
+        echo $this->templateEngine->render('about.twig.html');
     }
-
-
 }
