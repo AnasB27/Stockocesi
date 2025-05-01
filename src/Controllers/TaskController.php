@@ -14,11 +14,23 @@ class TaskController extends Controller {
     }
 
     /**
-     * Affiche la page d'accueil avec la liste des tâches.
+     * Affiche la page d'accueil.
      */
     public function welcomePage() {
+        echo $this->templateEngine->render('accueil.twig', [
+            'pageTitle' => 'Accueil - Gestion des stocks'
+        ]);
+    }
+
+    /**
+     * Affiche le journal d'action avec la liste des tâches.
+     */
+    public function logPage() {
         $tasks = $this->model->getAllTasks(); // Récupère toutes les tâches
-        echo $this->templateEngine->render('todo.twig.html', ['tasks' => $tasks]);
+        echo $this->templateEngine->render('log.twig', [
+            'tasks' => $tasks,
+            'pageTitle' => 'Journal d\'action'
+        ]);
     }
 
     /**
@@ -28,10 +40,10 @@ class TaskController extends Controller {
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['task'])) {
             $task = $_POST['task'];
             $this->model->addTask($task); // Ajoute la tâche via le modèle
-            header('Location: /'); // Redirige vers la page d'accueil
+            header('Location: /log'); // Redirige vers le journal d'action
             exit;
         } else {
-            header('Location: /'); // Redirige si le paramètre 'task' est manquant
+            header('Location: /log'); // Redirige si le paramètre 'task' est manquant
             exit;
         }
     }
@@ -43,10 +55,10 @@ class TaskController extends Controller {
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
             $taskId = (int) $_POST['id'];
             $this->model->checkTask($taskId); // Marque la tâche comme terminée
-            header('Location: /'); // Redirige vers la page d'accueil
+            header('Location: /log'); // Redirige vers le journal d'action
             exit;
         } else {
-            header('Location: /'); // Redirige si le paramètre 'id' est manquant
+            header('Location: /log'); // Redirige si le paramètre 'id' est manquant
             exit;
         }
     }
@@ -58,26 +70,35 @@ class TaskController extends Controller {
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
             $taskId = (int) $_POST['id'];
             $this->model->uncheckTask($taskId); // Marque la tâche comme non terminée
-            header('Location: /'); // Redirige vers la page d'accueil
+            header('Location: /log'); // Redirige vers le journal d'action
             exit;
         } else {
-            header('Location: /'); // Redirige si le paramètre 'id' est manquant
+            header('Location: /log'); // Redirige si le paramètre 'id' est manquant
             exit;
         }
     }
 
     /**
-     * Affiche l'historique des tâches.
+     * Supprime une tâche.
      */
-    public function historyPage() {
-        $tasks = $this->model->getAllTasks(); // Récupère toutes les tâches
-        echo $this->templateEngine->render('history.twig.html', ['tasks' => $tasks]);
+    public function deleteTask() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
+            $taskId = (int) $_POST['id'];
+            $this->model->deleteTask($taskId); // Supprime la tâche
+            header('Location: /log'); // Redirige vers le journal d'action
+            exit;
+        } else {
+            header('Location: /log'); // Redirige si le paramètre 'id' est manquant
+            exit;
+        }
     }
 
     /**
      * Affiche la page "À propos".
      */
     public function aboutPage() {
-        echo $this->templateEngine->render('about.twig.html');
+        echo $this->templateEngine->render('about.twig', [
+            'pageTitle' => 'À propos'
+        ]);
     }
 }

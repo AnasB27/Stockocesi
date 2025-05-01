@@ -3,24 +3,33 @@
 namespace App\Controllers;
 
 use App\Models\Database;
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
 
 /**
  * Controller : Un contrôleur générique pour gérer les fonctionnalités principales.
  */
 class Controller {
     protected $db;
+    protected $templateEngine;
 
     public function __construct() {
         // Initialiser la connexion à la base de données
         $this->db = Database::getInstance()->getConnection();
+
+        // Initialiser Twig
+        $loader = new FilesystemLoader(__DIR__ . '/../../templates');
+        $this->templateEngine = new Environment($loader, [
+            'cache' => false, // Désactiver le cache pour le développement
+        ]);
     }
 
     /**
      * Affiche la page d'accueil.
      */
     public function index() {
-        echo $this->render('index', [
-            'pageTitle' => 'Accueil - Stock Management'
+        echo $this->render('accueil/accueil', [
+            'pageTitle' => "Accueil - Stock O' Cesi"
         ]);
     }
 
