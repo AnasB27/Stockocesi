@@ -14,43 +14,13 @@ class Controller {
     protected $templateEngine;
 
     public function __construct() {
-        // Initialiser la connexion à la base de données
         $this->db = Database::getInstance()->getConnection();
 
-        // Initialiser Twig
+        // Initialiser Twig avec le bon chemin vers les templates
         $loader = new FilesystemLoader(__DIR__ . '/../../templates');
         $this->templateEngine = new Environment($loader, [
             'cache' => false, // Désactiver le cache pour le développement
         ]);
-    }
-
-    /**
-     * Affiche la page d'accueil.
-     */
-    public function index() {
-        echo $this->render('accueil/accueil', [
-            'pageTitle' => "Accueil - Stock O' Cesi"
-        ]);
-    }
-
-    /**
-     * Gère les erreurs 404.
-     */
-    public function notFound() {
-        http_response_code(404);
-        echo $this->render('errors/404', [
-            'pageTitle' => 'Page non trouvée'
-        ]);
-    }
-
-    /**
-     * Redirige vers une autre URL.
-     *
-     * @param string $url L'URL vers laquelle rediriger.
-     */
-    protected function redirect($url) {
-        header("Location: $url");
-        exit;
     }
 
     /**

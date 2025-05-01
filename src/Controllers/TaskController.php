@@ -5,19 +5,17 @@ use App\Models\TaskModel;
 
 class TaskController extends Controller {
     private $model;
-    private $templateEngine;
 
-    public function __construct($templateEngine) {
+    public function __construct() {
         parent::__construct();
         $this->model = new TaskModel();
-        $this->templateEngine = $templateEngine;
     }
 
     /**
      * Affiche la page d'accueil.
      */
     public function welcomePage() {
-        echo $this->templateEngine->render('accueil.twig', [
+        echo $this->templateEngine->render('accueil/accueil.twig', [
             'pageTitle' => 'Accueil - Gestion des stocks'
         ]);
     }
@@ -27,7 +25,7 @@ class TaskController extends Controller {
      */
     public function logPage() {
         $tasks = $this->model->getAllTasks(); // Récupère toutes les tâches
-        echo $this->templateEngine->render('log.twig', [
+        echo $this->templateEngine->render('journal/log.twig', [
             'tasks' => $tasks,
             'pageTitle' => 'Journal d\'action'
         ]);
@@ -97,7 +95,7 @@ class TaskController extends Controller {
      * Affiche la page "À propos".
      */
     public function aboutPage() {
-        echo $this->templateEngine->render('about.twig', [
+        echo $this->templateEngine->render('about/about.twig', [
             'pageTitle' => 'À propos'
         ]);
     }

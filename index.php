@@ -9,16 +9,17 @@ require "vendor/autoload.php";
 use App\Controllers\TaskController;
 
 // Initialize Twig
-$loader = new \Twig\Loader\FilesystemLoader('templates');
+$loader = new \Twig\Loader\FilesystemLoader(__DIR__ . '/templates');
 $twig = new \Twig\Environment($loader, [
-    'debug' => true
+    'debug' => true,
+    'cache' => false // Disable cache for development
 ]);
 
 // Get the URI from the request
 $uri = $_GET['uri'] ?? '/';
 
 // Initialize the controller
-$controller = new TaskController($twig);
+$controller = new TaskController();
 
 // Route the request
 switch ($uri) {
@@ -35,8 +36,8 @@ switch ($uri) {
         $controller->checkTask();
         break;
     case 'history':
-        // Call the historyPage method of the controller
-        $controller->historyPage();
+        // Call the logPage method of the controller
+        $controller->logPage();
         break;
     case 'uncheck_task':
         // Call the uncheckTask method of the controller
