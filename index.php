@@ -12,6 +12,7 @@ use App\Controllers\TaskController;
 use App\Controllers\UserController;
 use App\Controllers\LogController;
 use App\Controllers\AddAccountController;
+use App\Controllers\AddStoreController;
 
 // Activer l'affichage des erreurs pour le débogage
 ini_set('display_errors', 1);
@@ -34,6 +35,7 @@ $taskController = new TaskController();
 $userController = new UserController();
 $logController = new LogController();
 $addAccountController = new AddAccountController();
+$addStoreController = new AddStoreController();
 
 // Route the request
 switch ($uri) {
@@ -79,13 +81,20 @@ switch ($uri) {
     case 'logout':
         $userController->logout();
         break;
-        case 'admin/log':
-            if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['clear_logs'])) {
-                $logController->clearLogs();
-            } else {
-                $logController->showLog();
-            }
-            break;
+    case 'admin/log':
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['clear_logs'])) {
+            $logController->clearLogs();
+        } else {
+            $logController->showLog();
+        }
+        break;
+    case 'admin/add-store':
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $addStoreController->addStore();
+        } else {
+            $addStoreController->showAddStore();
+        }
+        break;
     default:
         http_response_code(404);
         echo '404 Not Found';
