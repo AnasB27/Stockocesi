@@ -16,6 +16,10 @@ class UserController extends Controller {
      * Si non, redirige vers la page de connexion.
      */
     private function ensureAuthenticated() {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
         if (!isset($_SESSION['user_id'])) {
             $this->redirect('/login');
         }
@@ -25,7 +29,7 @@ class UserController extends Controller {
      * Affiche la page de connexion.
      */
     public function loginPage() {
-        echo $this->templateEngine->render('account/login.twig', [
+        echo $this->render('account/login', [
             'pageTitle' => 'Connexion'
         ]);
     }
@@ -71,7 +75,7 @@ class UserController extends Controller {
             }
         }
 
-        // Afficher la page de connexion
+        // Afficher la page de connexion avec un message d'erreur (le cas échéant)
         echo $this->render('account/login', [
             'error' => $error,
             'pageTitle' => 'Connexion - Stock Management'
