@@ -1,120 +1,126 @@
 <?php
 namespace App\Models;
 
-class TaskModel extends Model {
+class TaskModel {
     const TODO_STATUS = "todo";
     const DONE_STATUS = "done";
 
+    private $db;
+
     /**
      * TaskModel constructor.
-     * 
-     * @param mixed $connection The database connection. If null, a new FileDatabase connection will be created.
      */
-    public function __construct($connection = null) {
-        if(is_null($connection)) {
-            $this->connection = new FileDatabase('tasks', ['task', 'status']);
-        } else {
-            $this->connection = $connection;
-        }
+    public function __construct() {
+        // Initialiser la connexion à la base de données
+        $this->db = Database::getInstance()->getConnection();
     }
 
     /**
-     * Get all tasks from the model.
-     * 
-     * @return array An array of all tasks.
+     * Récupère toutes les tâches.
+     *
+     * @return array Un tableau contenant toutes les tâches.
      */
     public function getAllTasks() {
-        // TODO: Call the getAllRecords method of the connection property
+        $stmt = $this->db->query("SELECT * FROM tasks");
+        return $stmt->fetchAll();
     }
 
     /**
-     * Get a specific task by its ID.
-     * 
-     * @param int $id The ID of the task.
-     * @return mixed The task with the specified ID.
+     * Récupère une tâche spécifique par son ID.
+     *
+     * @param int $id L'ID de la tâche.
+     * @return array|null La tâche correspondante ou null si elle n'existe pas.
      */
     public function getTask($id) {
-        // TODO: It's the same as the getAllTasks method, but we only return the task with the specified id
+        $stmt = $this->db->prepare("SELECT * FROM tasks WHERE id = :id");
+        $stmt->execute(['id' => $id]);
+        return $stmt->fetch();
     }
-    
+
     /**
-     * Get all tasks with the status 'done'.
-     * 
-     * @return array An array of tasks with the status 'done'.
+     * Récupère toutes les tâches avec le statut 'done'.
+     *
+     * @return array Un tableau de tâches avec le statut 'done'.
      */
     public function getDoneTasks() {
-        // Data array returned by the method
-        $data = [];
-        // TODO: Retrieve all the tasks from the model
-
-        // TODO: Keep only the tasks with the status 'done' (self::DONE_STATUS)
-        
-        return $data;
+        $stmt = $this->db->prepare("SELECT * FROM tasks WHERE status = :status");
+        $stmt->execute(['status' => self::DONE_STATUS]);
+        return $stmt->fetchAll();
     }
 
     /**
-     * Get all tasks with the status 'todo'.
-     * 
-     * @return array An array of tasks with the status 'todo'.
+     * Récupère toutes les tâches avec le statut 'todo'.
+     *
+     * @return array Un tableau de tâches avec le statut 'todo'.
      */
     public function getToDoTasks() {
-        // Data array returned by the method
-        $data = [];
-        // TODO: Retrieve all the tasks from the model
-
-        // TODO: Keep only the tasks with the status 'todo' (self::TODO_STATUS)
-        return $data;
+        $stmt = $this->db->prepare("SELECT * FROM tasks WHERE status = :status");
+        $stmt->execute(['status' => self::TODO_STATUS]);
+        return $stmt->fetchAll();
     }
 
     /**
-     * Add a new task to the model.
-     * 
-     * @param string $task The task to add.
-     * @return mixed The result of the insert operation.
+     * Ajoute une nouvelle tâche.
+     *
+     * @param string $task La description de la tâche.
+     * @return bool True si l'insertion a réussi, sinon false.
      */
     public function addTask($task) {
-        // Create a new record with the task and the status 'todo' (by default)
-        $record = ['task' => $task, 'status' => self::TODO_STATUS];
-
-        // TODO: Call the insertRecord method of the connection property and return the result
+        $stmt = $this->db->prepare("INSERT INTO tasks (task, status) VALUES (:task, :status)");
+        return $stmt->execute(['task' => $task, 'status' => self::TODO_STATUS]);
     }
 
     /**
-     * Check a task as 'done' by its ID.
-     * 
-     * @param int $id The ID of the task to check.
-     * @return mixed The result of the update operation.
+     * Marque une tâche comme terminée.
+     *
+     * @param int $id L'ID de la tâche.
+     * @return bool True si la mise à jour a réussi, sinon false.
      */
     public function checkTask($id) {
-        // TODO: Retrieve the task with the specified id
-        // TODO: Check if the task exists, if not, return false
+        $task = $this->getTask($id);
+        if (!$task) {
+            return false; // La tâche n'existe pas
+        }
 
-        // The task is updated with the status 'done'
-        return $this->updateTask($id, $task["task"], self::DONE_STATUS);
+        return $this->updateTask($id, $task['task'], self::DONE_STATUS);
     }
 
     /**
-     * Uncheck a task and set its status back to 'todo'.
-     * 
-     * @param int $id The ID of the task to uncheck.
-     * @return mixed The result of the update operation.
+     * Marque une tâche comme non terminée.
+     *
+     * @param int $id L'ID de la tâche.
+     * @return bool True si la mise à jour a réussi, sinon false.
      */
     public function uncheckTask($id) {
-        // TODO: It's the same as the checkTask method, but we update the status to 'todo'
+        $task = $this->getTask($id);
+        if (!$task) {
+            return false; // La tâche n'existe pas
+        }
+
+        return $this->updateTask($id, $task['task'], self::TODO_STATUS);
     }
 
     /**
-     * Helper method to update a task with a new status.
-     * Update a task with a new task and status.
-     * 
-     * @param int $id The ID of the task to update.
-     * @param string $task The new task.
-     * @param string $status The new status.
-     * @return mixed The result of the update operation.
+     * Met à jour une tâche avec un nouveau statut.
+     *
+     * @param int $id L'ID de la tâche.
+     * @param string $task La description de la tâche.
+     * @param string $status Le nouveau statut.
+     * @return bool True si la mise à jour a réussi, sinon false.
      */
     private function updateTask($id, $task, $status) {
-        $record = ['task' => $task, 'status' => $status];
-        return $this->connection->updateRecord($id, $record);
+        $stmt = $this->db->prepare("UPDATE tasks SET task = :task, status = :status WHERE id = :id");
+        return $stmt->execute(['task' => $task, 'status' => $status, 'id' => $id]);
     }
 
+    /**
+     * Supprime une tâche par son ID.
+     *
+     * @param int $id L'ID de la tâche.
+     * @return bool True si la suppression a réussi, sinon false.
+     */
+    public function deleteTask($id) {
+        $stmt = $this->db->prepare("DELETE FROM tasks WHERE id = :id");
+        return $stmt->execute(['id' => $id]);
+    }
 }

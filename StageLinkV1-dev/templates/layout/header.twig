@@ -1,0 +1,48 @@
+<header>
+    <div class="first-bar">
+        <div class="stagelink">StageLink</div>
+        <form action="index.php" method="GET" {% if app.request.get.route == 'accueil' or app.request.get.route == 'dashboard' %}style="display: none;"{% endif %}>
+            <input type="hidden" name="route" value="{{ app.request.get.route }}">
+            <input type="text" id="searchInput" name="search" placeholder="{% if app.request.get.route == 'offres' %}Rechercher une offre...{% elseif app.request.get.route == 'entreprises' %}Rechercher une entreprise...{% else %}Rechercher...{% endif %}" value="{{ searchTerm|default('') }}" />
+            <button type="submit"><img src="static/images/search.svg" alt="Rechercher" /></button>
+        </form>
+        <div class="compte" id="compte-menu">
+            <img src="static/images/compte.svg" alt="Mon compte" />
+            <div class="nom-compte">
+                {{ session.user_prenom|default("Mon Compte") }}
+            </div>
+            <div class="compte-popup">
+                <a href="/StageLinkV1/logout" class="logout-btn">Se déconnecter</a>
+            </div>
+        </div>
+    </div>
+    <nav>
+        <button class="burger-menu" onclick="toggleMenu()">
+            <span></span>
+            <span></span>
+        </button>
+        <div class="nav-links">
+            {% set current_route = app.request.get.route|default('accueil') %}
+            
+            <a href="/StageLinkV1/accueil" class="pages {{ current_route == 'accueil' ? 'activer' : '' }}">Accueil</a>
+            
+            {% if session.user_id is defined %}
+                <a href="/StageLinkV1/offres" class="pages {{ current_route in ['offres', 'offre_details', 'postuler'] ? 'activer' : '' }}">Offres</a>
+                <a href="/StageLinkV1/entreprises" class="pages {{ current_route in ['entreprises', 'entreprise_details'] ? 'activer' : '' }}">Entreprises</a>
+
+                {% if session.user_role is defined and (session.user_role == 'ADMIN' or session.user_role == 'ETUDIANT') %}
+                    <a href="/StageLinkV1/mes_candidatures" class="pages {{ current_route in ['mes_candidatures', 'confirmation_candidature'] ? 'activer' : '' }}">Mes candidatures</a>
+                {% endif %}
+
+                {% if session.user_role is defined and (session.user_role == 'ADMIN' or session.user_role == 'PILOTE') %}
+                    <a href="/StageLinkV1/dashboard" class="pages {{ current_route == 'dashboard' ? 'activer' : '' }}">Dashboard</a>
+                {% endif %}
+
+                {% if session.user_role is defined and (session.user_role == 'ADMIN' or session.user_role == 'ETUDIANT') %}
+                    <a href="/StageLinkV1/wishlist" class="pages {{ current_route == 'wishlist' ? 'activer' : '' }}">Wishlist</a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </nav>
+</header>
+<script src="static/js/burger-menu.js"></script>

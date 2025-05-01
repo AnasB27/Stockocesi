@@ -67,6 +67,11 @@ footer {
     align-items: center;
     border-radius: 30%;
     overflow: hidden; /* Cache les débordements */
+    cursor: pointer;
+}
+
+.logo-container a:hover {
+    opacity: 0.8;
 }
 
 .logo {

@@ -5,49 +5,62 @@
  */
 
 require "vendor/autoload.php";
+// Définir la constante ROOT_PATH pour les chemins absolus
+define('ROOT_PATH', __DIR__);
 
 use App\Controllers\TaskController;
+use App\Controllers\UserController;
 
-// Initialize Twig
-$loader = new \Twig\Loader\FilesystemLoader('templates');
-$twig = new \Twig\Environment($loader, [
-    'debug' => true
-]);
+// Activer l'affichage des erreurs pour le débogage
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+// Démarrer la session si elle n'est pas déjà démarrée
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Get the URI from the request
 $uri = $_GET['uri'] ?? '/';
 
-// Initialize the controller
-$controller = new TaskController($twig);
+// Normalize the URI (remove leading/trailing slashes)
+$uri = trim($uri, '/');
+
+// Initialize the controllers
+$taskController = new TaskController();
+$userController = new UserController();
 
 // Route the request
 switch ($uri) {
-    case '/':
-        // Call the welcomePage method of the controller
-        $controller->welcomePage();
+    case '':
+        $taskController->welcomePage();
         break;
     case 'add_task':
-        // Call the addTask method of the controller
-        $controller->addTask();
+        $taskController->addTask();
         break;
     case 'check_task':
-        // Call the checkTask method of the controller
-        $controller->checkTask();
+        $taskController->checkTask();
         break;
     case 'history':
-        // Call the historyPage method of the controller
-        $controller->historyPage();
+        $taskController->logPage();
         break;
     case 'uncheck_task':
-        // Call the uncheckTask method of the controller
-        $controller->uncheckTask();
+        $taskController->uncheckTask();
+        break;
+    case 'delete_task':
+        $taskController->deleteTask();
         break;
     case 'about':
-        // Call the aboutPage method of the controller
-        $controller->aboutPage();
+        $taskController->aboutPage();
+        break;
+    case 'login':
+        $userController->login();
+        break;
+    case 'logout':
+        $userController->logout();
         break;
     default:
-        // Return a 404 error for unknown routes
         http_response_code(404);
         echo '404 Not Found';
         break;

@@ -1,0 +1,386 @@
+{% extends 'layout/base.twig' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="static/css/dashboard.css">
+    <link rel="stylesheet" href="static/css/pagination.css">
+{% endblock %}
+
+{% block javascripts %}
+    <script src="static/js/users-management.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="dashboard-header">
+        <h1>Tableau de bord</h1>
+    </div>
+
+    <!-- Sections du tableau de bord -->
+    <div class="dashboard-content">
+        <!-- Messages d'alerte -->
+        <div class="alerts-container">
+            {% if error %}
+                <div class="alert alert-error">
+                    {{ error }}
+                </div>
+            {% endif %}
+            {% if success %}
+                <div class="alert alert-success">
+                    {{ success }}
+                </div>
+            {% endif %}
+        </div>
+        
+
+        <!-- Section des utilisateurs -->
+        <div class="card">
+            <h2>Gestion des utilisateurs</h2>
+            
+            <!-- Formulaire de création d'utilisateur -->
+            {% if session.user_role == 'ADMIN' or session.user_role == 'PILOTE' %}
+            <div class="new-user-section">
+                <h3>Créer un nouvel utilisateur</h3>
+                <form class="form-utilisateur" action="index.php?route=traiter_utilisateur" method="post">
+                    <input type="hidden" name="action" value="create">
+                    
+                    <div class="form-group">
+                        <label for="nom">Nom</label>
+                        <input type="text" id="nom" name="nom" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="prenom">Prénom</label>
+                        <input type="text" id="prenom" name="prenom" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="mot_de_passe">Mot de passe</label>
+                        <input type="password" id="mot_de_passe" name="mot_de_passe" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="role">Rôle</label>
+                        <select id="role" name="role" required>
+                            <option value="ETUDIANT">Étudiant</option>
+                            {% if session.user_role == 'ADMIN' %}
+                            <option value="PILOTE">Pilote</option>
+                            {% endif %}
+                        </select>
+                    </div>
+                    
+                    <div class="form-action-buttons">
+                        <button type="submit" class="btn btn-primary">Créer l'utilisateur</button>
+                    </div>
+                </form>
+            </div>
+            {% endif %}
+            
+            <!-- Liste des étudiants -->
+            <div class="users-section">
+                <h3>Liste des étudiants</h3>
+                
+                <!-- Barre de recherche pour les étudiants -->
+                <div class="search-container">
+                    <form action="index.php" method="GET" class="search-form">
+                        <input type="hidden" name="route" value="dashboard">
+                        <div class="search-input-container">
+                            <input type="text" name="search" placeholder="Rechercher un étudiant..." value="{{ searchTerm }}">
+                            <button type="submit" class="search-button">
+                                <img src="static/images/search.svg" alt="Rechercher" />
+                            </button>
+                        </div>
+                        {% if searchTerm %}
+                            <a href="index.php?route=dashboard" class="reset-search">Réinitialiser</a>
+                        {% endif %}
+                    </form>
+                </div>
+                
+                {% if etudiants|length > 0 %}
+                    <div class="users-table-container">
+                        <table class="users-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nom</th>
+                                    <th>Prénom</th>
+                                    <th>Email</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for etudiant in etudiants %}
+                                    <tr data-user-id="{{ etudiant.id }}">
+                                        <td data-label="ID">{{ etudiant.id }}</td>
+                                        <td data-label="Nom">{{ etudiant.nom }}</td>
+                                        <td data-label="Prénom">{{ etudiant.prenom }}</td>
+                                        <td data-label="Email">{{ etudiant.email }}</td>
+                                        <td data-label="Actions" class="actions">
+                                            <button class="btn-edit" onclick="editUser({{ etudiant.id }})">Modifier</button>
+                                            {% if session.user_id != etudiant.id %}
+                                                <button class="btn-delete" onclick="deleteUser({{ etudiant.id }})">Supprimer</button>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Pagination -->
+                    <div class="pagination-container">
+                        <ul class="pagination">
+                            {% if pagination.page > 1 %}
+                                <li><a href="index.php?route=dashboard&page={{ pagination.page - 1 }}{% if searchTerm %}&search={{ searchTerm }}{% endif %}" class="pagination-item">&laquo; Précédent</a></li>
+                            {% else %}
+                                <li><span class="pagination-item disabled">&laquo; Précédent</span></li>
+                            {% endif %}
+                            
+                            {% set startPage = max(1, pagination.page - 2) %}
+                            {% set endPage = min(pagination.totalPages, pagination.page + 2) %}
+                            
+                            {% if startPage > 1 %}
+                                <li><a href="index.php?route=dashboard&page=1{% if searchTerm %}&search={{ searchTerm }}{% endif %}" class="pagination-item">1</a></li>
+                                {% if startPage > 2 %}
+                                    <li><span class="pagination-item ellipsis">...</span></li>
+                                {% endif %}
+                            {% endif %}
+                            
+                            {% for i in startPage..endPage %}
+                                {% if i == pagination.page %}
+                                    <li><span class="pagination-item active">{{ i }}</span></li>
+                                {% else %}
+                                    <li><a href="index.php?route=dashboard&page={{ i }}{% if searchTerm %}&search={{ searchTerm }}{% endif %}" class="pagination-item">{{ i }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if endPage < pagination.totalPages %}
+                                {% if endPage < pagination.totalPages - 1 %}
+                                    <li><span class="pagination-item ellipsis">...</span></li>
+                                {% endif %}
+                                <li><a href="index.php?route=dashboard&page={{ pagination.totalPages }}{% if searchTerm %}&search={{ searchTerm }}{% endif %}" class="pagination-item">{{ pagination.totalPages }}</a></li>
+                            {% endif %}
+                            
+                            {% if pagination.page < pagination.totalPages %}
+                                <li><a href="index.php?route=dashboard&page={{ pagination.page + 1 }}{% if searchTerm %}&search={{ searchTerm }}{% endif %}" class="pagination-item">Suivant &raquo;</a></li>
+                            {% else %}
+                                <li><span class="pagination-item disabled">Suivant &raquo;</span></li>
+                            {% endif %}
+                        </ul>
+                        <div class="pagination-info">Page {{ pagination.page }} sur {{ pagination.totalPages }} ({{ pagination.totalItems }} étudiants)</div>
+                    </div>
+                {% else %}
+                    <p>Aucun étudiant trouvé.</p>
+                {% endif %}
+            </div>
+            
+            <!-- Liste des pilotes (visible uniquement par les admins) -->
+            {% if session.user_role == 'ADMIN' %}
+            <div class="users-section">
+                <h3>Liste des pilotes</h3>
+                
+                <!-- Barre de recherche pour les pilotes -->
+                <div class="search-container">
+                    <form action="index.php" method="GET" class="search-form">
+                        <input type="hidden" name="route" value="dashboard">
+                        <div class="search-input-container">
+                            <input type="text" name="search_pilote" placeholder="Rechercher un pilote..." value="{{ searchTermPilote }}">
+                            <button type="submit" class="search-button">
+                                <img src="static/images/search.svg" alt="Rechercher" />
+                            </button>
+                        </div>
+                        {% if searchTermPilote %}
+                            <a href="index.php?route=dashboard" class="reset-search">Réinitialiser</a>
+                        {% endif %}
+                    </form>
+                </div>
+                
+                {% if pilotes|length > 0 %}
+                    <div class="users-table-container">
+                        <table class="users-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nom</th>
+                                    <th>Prénom</th>
+                                    <th>Email</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for pilote in pilotes %}
+                                    <tr data-user-id="{{ pilote.id }}">
+                                        <td data-label="ID">{{ pilote.id }}</td>
+                                        <td data-label="Nom">{{ pilote.nom }}</td>
+                                        <td data-label="Prénom">{{ pilote.prenom }}</td>
+                                        <td data-label="Email">{{ pilote.email }}</td>
+                                        <td data-label="Actions" class="actions">
+                                            <button class="btn-edit" onclick="editUser({{ pilote.id }})">Modifier</button>
+                                            {% if session.user_id != pilote.id %}
+                                                <button class="btn-delete" onclick="deleteUser({{ pilote.id }})">Supprimer</button>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Pagination pour les pilotes -->
+                    <div class="pagination-container">
+                        <ul class="pagination">
+                            {% if paginationPilote.page > 1 %}
+                                <li><a href="index.php?route=dashboard&page_pilote={{ paginationPilote.page - 1 }}{% if searchTermPilote %}&search_pilote={{ searchTermPilote }}{% endif %}" class="pagination-item">&laquo; Précédent</a></li>
+                            {% else %}
+                                <li><span class="pagination-item disabled">&laquo; Précédent</span></li>
+                            {% endif %}
+                            
+                            {% set startPage = max(1, paginationPilote.page - 2) %}
+                            {% set endPage = min(paginationPilote.totalPages, paginationPilote.page + 2) %}
+                            
+                            {% if startPage > 1 %}
+                                <li><a href="index.php?route=dashboard&page_pilote=1{% if searchTermPilote %}&search_pilote={{ searchTermPilote }}{% endif %}" class="pagination-item">1</a></li>
+                                {% if startPage > 2 %}
+                                    <li><span class="pagination-item ellipsis">...</span></li>
+                                {% endif %}
+                            {% endif %}
+                            
+                            {% for i in startPage..endPage %}
+                                {% if i == paginationPilote.page %}
+                                    <li><span class="pagination-item active">{{ i }}</span></li>
+                                {% else %}
+                                    <li><a href="index.php?route=dashboard&page_pilote={{ i }}{% if searchTermPilote %}&search_pilote={{ searchTermPilote }}{% endif %}" class="pagination-item">{{ i }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if endPage < paginationPilote.totalPages %}
+                                {% if endPage < paginationPilote.totalPages - 1 %}
+                                    <li><span class="pagination-item ellipsis">...</span></li>
+                                {% endif %}
+                                <li><a href="index.php?route=dashboard&page_pilote={{ paginationPilote.totalPages }}{% if searchTermPilote %}&search_pilote={{ searchTermPilote }}{% endif %}" class="pagination-item">{{ paginationPilote.totalPages }}</a></li>
+                            {% endif %}
+                            
+                            {% if paginationPilote.page < paginationPilote.totalPages %}
+                                <li><a href="index.php?route=dashboard&page_pilote={{ paginationPilote.page + 1 }}{% if searchTermPilote %}&search_pilote={{ searchTermPilote }}{% endif %}" class="pagination-item">Suivant &raquo;</a></li>
+                            {% else %}
+                                <li><span class="pagination-item disabled">Suivant &raquo;</span></li>
+                            {% endif %}
+                        </ul>
+                        <div class="pagination-info">Page {{ paginationPilote.page }} sur {{ paginationPilote.totalPages }} ({{ paginationPilote.totalItems }} pilotes)</div>
+                    </div>
+                {% else %}
+                    <p>Aucun pilote trouvé.</p>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+        
+        {% if userPermissions.GERER_ENTREPRISES is defined and userPermissions.GERER_ENTREPRISES %}
+        <div class="card">
+            <h2>Créer une entreprise</h2>
+            <form action="index.php?route=traiter_entreprise" method="POST" class="form-entreprise">
+                <input type="hidden" name="action" value="create">
+                <div class="form-group">
+                    <label for="entreprise_nom">Nom de l'entreprise</label>
+                    <input type="text" id="entreprise_nom" name="nom" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="entreprise_description">Description de l'entreprise</label>
+                    <textarea id="entreprise_description" name="description" rows="4" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="entreprise_email">Email de contact</label>
+                    <input type="email" id="entreprise_email" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="entreprise_telephone">Téléphone de contact</label>
+                    <input type="tel" id="entreprise_telephone" name="telephone" pattern="[0-9]{10}" required>
+                    <small>Format : 0123456789</small>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-submit">Créer l'entreprise</button>
+                </div>
+            </form>
+        </div>
+        {% endif %}
+        
+        {% if userPermissions.CREER_OFFRE is defined and userPermissions.CREER_OFFRE %}
+        <div class="card">
+            <h2>Créer une offre</h2>
+            <form action="index.php?route=traiter_offre" method="POST" class="form-offre">
+                <input type="hidden" name="action" value="create">
+                
+                <div class="form-group">
+                    <label for="offre_entreprise_id">Entreprise</label>
+                    <select id="offre_entreprise_id" name="entreprise_id" required>
+                        <option value="">Sélectionnez une entreprise</option>
+                        {% for entreprise in entreprises %}
+                        <option value="{{ entreprise.id }}">{{ entreprise.nom }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="offre_titre">Titre de l'offre</label>
+                    <input type="text" id="offre_titre" name="titre" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="offre_description">Description</label>
+                    <textarea id="offre_description" name="description" rows="4" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="offre_base_remuneration">Rémunération (€)</label>
+                    <input type="number" id="offre_base_remuneration" name="base_remuneration" step="0.01" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="offre_date_debut">Date de début</label>
+                    <input type="date" id="offre_date_debut" name="date_debut">
+                </div>
+                
+                <div class="form-group">
+                    <label for="offre_date_fin">Date de fin</label>
+                    <input type="date" id="offre_date_fin" name="date_fin">
+                </div>
+                
+                <div class="form-group">
+                    <label>Compétences requises</label>
+                    <div class="checkbox-grid">
+                        {% if competences is empty %}
+                            <p style="grid-column: 1 / -1; text-align: center;">
+                                Aucune compétence disponible. Veuillez en ajouter d'abord.
+                            </p>
+                        {% else %}
+                            {% for competence in competences %}
+                            <div class="checkbox-item">
+                                <input type="checkbox" 
+                                       id="offre_comp_{{ competence.id }}" 
+                                       name="competences[]" 
+                                       value="{{ competence.id }}">
+                                <label for="offre_comp_{{ competence.id }}">{{ competence.nom }}</label>
+                            </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    <p class="info-text">Sélectionnez au moins une compétence requise pour l'offre.</p>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn-submit">Créer l'offre</button>
+                </div>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

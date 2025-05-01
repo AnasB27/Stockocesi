@@ -1,0 +1,227 @@
+{% extends 'layout/base.twig' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="static/css/entreprise-detail.css">
+{% endblock %}
+
+{% block content %}
+<div class="entreprise-details">
+    <div class="centre">
+        <a href="/StageLinkV1/entreprises" class="navbar">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="16" fill="none" viewBox="0 0 22 16">
+                <path fill="#000" d="M21 7a1 1 0 1 1 0 2V7ZM.293 8.707a1 1 0 0 1 0-1.414L6.657.929A1 1 0 0 1 8.07 2.343L2.414 8l5.657 5.657a1 1 0 1 1-1.414 1.414L.293 8.707ZM21 9H1V7h20v2Z"/>
+            </svg>
+            <div class="texte">Retour</div>
+        </a>
+    </div>
+
+    <div class="entreprise-content">
+        <div class="entreprise-header">
+            <h1>{{ entreprise.nom }}</h1>
+            
+            {% if session.user_role is defined and (session.user_role == 'ADMIN' or session.user_role == 'PILOTE') %}
+            <div class="admin-actions">
+                <button class="btn-edit" onclick="openEditModal()">Modifier l'entreprise</button>
+                <button class="btn-delete" onclick="confirmDelete()">Supprimer l'entreprise</button>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="info-box rating-box">
+            <div class="rating-stars">
+                {% set noteValue = entreprise.note_moyenne is defined ? entreprise.note_moyenne : 0 %}
+                {% set note = min(5, max(0, (noteValue * 2)|round / 2)) %}
+                
+                {% for i in 1..5 %}
+                    {% if i <= note %}
+                        <span class="star full">★</span>
+                    {% elseif i - 0.5 == note %}
+                        <span class="star half">★</span>
+                    {% else %}
+                        <span class="star empty">★</span>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <div class="rating-value">{{ note|number_format(1) }}/5</div>
+            <div class="rating-count">({{ entreprise.nombre_evaluations is defined ? entreprise.nombre_evaluations : 0 }} avis)</div>
+        </div>
+
+        <div class="entreprise-section">
+            <h2>À propos</h2>
+            <p>{{ entreprise.description|nl2br }}</p>
+        </div>
+
+        <div class="entreprise-section contact-section">
+            <h2>Contact</h2>
+            <div class="contact-info">
+                <div class="contact-item">
+                    <strong>Email:</strong>
+                    <span>{{ entreprise.email }}</span>
+                </div>
+                <div class="contact-item">
+                    <strong>Téléphone:</strong>
+                    <span>{{ entreprise.telephone }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="entreprise-section offres-section">
+            <h2>Offres de stage disponibles</h2>
+            {% if offres is empty %}
+                <p class="no-offres">Aucune offre disponible actuellement</p>
+            {% else %}
+                <div class="offres-grid">
+                    {% for offre in offres %}
+                    <div class="offre-card">
+                        <h3>{{ offre.titre }}</h3>
+                        <p class="offre-dates">
+                            Du {{ offre.date_debut|date('d/m/Y') }} 
+                            au {{ offre.date_fin|date('d/m/Y') }}
+                        </p>
+                        <p class="offre-desc">{{ offre.description|slice(0, 100) }}...</p>
+                        <p class="offre-remuneration">{{ offre.base_remuneration|number_format(2) }} €</p>
+                        <p class="offre-candidatures">{{ offre.nombre_candidatures }} candidature(s)</p>
+                        <a href="index.php?route=offre_details&id={{ offre.id }}" class="btn-voir">Voir détails</a>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="entreprise-section avis-section">
+            <h2>Évaluations de l'entreprise</h2>
+            
+            {% if session.user_id is defined %}
+            <div class="add-avis">
+                <h3>Notez cette entreprise</h3>
+                
+                <!-- Système d'évaluation avec étoiles -->
+                <form action="index.php?route=rate_entreprise" method="POST" id="rating-form">
+                    <input type="hidden" name="entreprise_id" value="{{ entreprise.id }}">
+                    <input type="hidden" name="note" id="selected-rating" value="">
+                    
+                    <div>
+                        <p>Votre note :</p>
+                        <div class="star-rating">
+                            <span class="star" data-value="1">★</span>
+                            <span class="star" data-value="2">★</span>
+                            <span class="star" data-value="3">★</span>
+                            <span class="star" data-value="4">★</span>
+                            <span class="star" data-value="5">★</span>
+                            <span id="rating-text"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="commentaire">Votre commentaire (optionnel) :</label>
+                        <textarea id="commentaire" name="commentaire" rows="4" placeholder="Partagez votre expérience avec cette entreprise..."></textarea>
+                    </div>
+                    
+                    <button type="submit" id="submit-rating">
+                        Envoyer votre note
+                    </button>
+                </form>
+            </div>
+            {% endif %}
+            
+            <!-- Liste des évaluations -->
+            <div class="evaluations-list">
+                {% if evaluations is defined and evaluations|length > 0 %}
+                    <h3>Avis des utilisateurs</h3>
+                    {% for evaluation in evaluations %}
+                        <div class="evaluation-item">
+                            <div class="evaluation-header">
+                                <div class="user-info">{{ evaluation.prenom }} {{ evaluation.nom }}</div>
+                                <div class="rating-stars">
+                                    {% for i in 1..5 %}
+                                        {% if i <= evaluation.note %}
+                                            <span class="star filled">★</span>
+                                        {% else %}
+                                            <span class="star">☆</span>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% if evaluation.commentaire is defined and evaluation.commentaire is not empty %}
+                                <div class="evaluation-comment">
+                                    <p>{{ evaluation.commentaire }}</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="no-evaluations">Aucune évaluation pour le moment.</p>
+                {% endif %}
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<!-- Modal pour modifier une entreprise -->
+{% if session.user_role is defined and (session.user_role == 'ADMIN' or session.user_role == 'PILOTE') %}
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeEditModal()">&times;</span>
+        <h3>Modifier l'entreprise</h3>
+        <form id="editEntrepriseForm" action="index.php?route=traiter_entreprise" method="POST" class="form-entreprise">
+            <input type="hidden" name="action" value="update">
+            <input type="hidden" name="id" value="{{ entreprise.id }}">
+            
+            <div class="form-group">
+                <label for="edit_nom">Nom de l'entreprise</label>
+                <input type="text" id="edit_nom" name="nom" value="{{ entreprise.nom }}" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="edit_description">Description de l'entreprise</label>
+                <textarea id="edit_description" name="description" rows="4" required>{{ entreprise.description }}</textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="edit_email">Email de contact</label>
+                <input type="email" id="edit_email" name="email" value="{{ entreprise.email }}" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="edit_telephone">Téléphone de contact</label>
+                <input type="tel" id="edit_telephone" name="telephone" value="{{ entreprise.telephone }}" pattern="[0-9]{10}" required>
+                <small>Format : 0123456789</small>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="btn-cancel" onclick="closeEditModal()">Annuler</button>
+                <button type="submit" class="btn-submit">Enregistrer les modifications</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal pour confirmer la suppression -->
+<div id="deleteModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeDeleteModal()">&times;</span>
+        <h3>Confirmer la suppression</h3>
+        <p>Êtes-vous sûr de vouloir supprimer l'entreprise <strong>{{ entreprise.nom }}</strong> ?</p>
+        <p class="warning">Attention : Cette action est irréversible et supprimera également toutes les offres associées à cette entreprise.</p>
+        
+        <form id="deleteEntrepriseForm" action="index.php?route=traiter_entreprise" method="POST">
+            <input type="hidden" name="action" value="delete">
+            <input type="hidden" name="id" value="{{ entreprise.id }}">
+            
+            <div class="form-actions">
+                <button type="button" class="btn-cancel" onclick="closeDeleteModal()">Annuler</button>
+                <button type="submit" class="btn-delete">Confirmer la suppression</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block javascripts %}
+<script src="static/js/notation.js"></script>
+{% if session.user_role is defined and (session.user_role == 'ADMIN' or session.user_role == 'PILOTE') %}
+<script src="static/js/entreprise-details.js"></script>
+{% endif %}
+{% endblock %}

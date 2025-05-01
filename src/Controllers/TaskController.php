@@ -4,48 +4,99 @@ namespace App\Controllers;
 use App\Models\TaskModel;
 
 class TaskController extends Controller {
+    private $model;
 
-    public function __construct($templateEngine) {
+    public function __construct() {
+        parent::__construct();
         $this->model = new TaskModel();
-        $this->templateEngine = $templateEngine;
     }
 
+    /**
+     * Affiche la page d'accueil.
+     */
     public function welcomePage() {
-        // TODO: Retrieve the list of tasks from the model
-        echo $this->templateEngine->render('todo.twig.html', ['tasks' => $tasks]);
+        echo $this->templateEngine->render('accueil/accueil.twig', [
+            'pageTitle' => 'Accueil - Gestion des stocks'
+        ]);
+    }
+    
+    /**
+     * Affiche le journal d'action avec la liste des tâches.
+     */
+    public function logPage() {
+        $tasks = $this->model->getAllTasks(); // Récupère toutes les tâches
+        echo $this->templateEngine->render('journal/log.twig', [
+            'tasks' => $tasks,
+            'pageTitle' => 'Journal d\'action'
+        ]);
     }
 
+    /**
+     * Ajoute une nouvelle tâche.
+     */
     public function addTask() {
-        // TODO: First, we check if the 'task' parameter is present in the POST request
-        // TODO: If not, we redirect the user to the home page: header('Location: /');
-
-        // TODO: Then, we retrieve the value of the 'task' parameter
-        // TODO: We call the addTask method of the model with the task as a parameter
-        // TODO: Finally, we redirect the user to the home page: header('Location: /');
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['task'])) {
+            $task = $_POST['task'];
+            $this->model->addTask($task); // Ajoute la tâche via le modèle
+            header('Location: /log'); // Redirige vers le journal d'action
+            exit;
+        } else {
+            header('Location: /log'); // Redirige si le paramètre 'task' est manquant
+            exit;
+        }
     }
 
+    /**
+     * Marque une tâche comme terminée.
+     */
     public function checkTask() {
-        // TODO: First, we check if the 'id' parameter is present in the POST request
-        // TODO: If not, we redirect the user to the home page
-
-        // TODO: Then, we retrieve the value of the 'id' parameter
-        // TODO: We call the checkTask method of the model with the id as a parameter
-        // TODO: Finally, we redirect the user to the home page
-
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
+            $taskId = (int) $_POST['id'];
+            $this->model->checkTask($taskId); // Marque la tâche comme terminée
+            header('Location: /log'); // Redirige vers le journal d'action
+            exit;
+        } else {
+            header('Location: /log'); // Redirige si le paramètre 'id' est manquant
+            exit;
+        }
     }
 
-    public function historyPage() {
-        // TODO: Retrieve the list of tasks from the model
-        // TDOO: Render the history.twig.html template with the list of tasks
-    }
-
+    /**
+     * Marque une tâche comme non terminée.
+     */
     public function uncheckTask() {
-        // It's the same as the checkTask method, but we call the uncheckTask method of the model...
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
+            $taskId = (int) $_POST['id'];
+            $this->model->uncheckTask($taskId); // Marque la tâche comme non terminée
+            header('Location: /log'); // Redirige vers le journal d'action
+            exit;
+        } else {
+            header('Location: /log'); // Redirige si le paramètre 'id' est manquant
+            exit;
+        }
     }
 
+    /**
+     * Supprime une tâche.
+     */
+    public function deleteTask() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
+            $taskId = (int) $_POST['id'];
+            $this->model->deleteTask($taskId); // Supprime la tâche
+            header('Location: /log'); // Redirige vers le journal d'action
+            exit;
+        } else {
+            header('Location: /log'); // Redirige si le paramètre 'id' est manquant
+            exit;
+        }
+    }
+
+    /**
+     * Affiche la page "À propos".
+     */
     public function aboutPage() {
-        // TODO: Render the about.twig.html template
+        echo $this->templateEngine->render('about/about.twig', [
+            'pageTitle' => 'À propos'
+        ]);
     }
-
-
 }

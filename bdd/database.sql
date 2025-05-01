@@ -1,97 +1,111 @@
--- Création de la base de données
-CREATE DATABASE IF NOT EXISTS gestion_stock CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE gestion_stock;
+-- Create the database
+CREATE DATABASE IF NOT EXISTS stock_management CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE stock_management;
 
--- Table des utilisateurs (Fx1)
-CREATE TABLE utilisateur (
+-- Users table (Fx1)
+CREATE TABLE user (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nom VARCHAR(100) NOT NULL,
+    name VARCHAR(100) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
-    mot_de_passe VARCHAR(255) NOT NULL,
-    role ENUM('Admin', 'Gestionnaire', 'Employé') NOT NULL,
-    date_creation DATETIME DEFAULT CURRENT_TIMESTAMP
+    password VARCHAR(255) NOT NULL,
+    role ENUM('Admin', 'Manager', 'Employee') NOT NULL,
+    creation_date DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
--- Table des journaux d'actions (Fx15)
-CREATE TABLE journal_action (
+-- Insert a default admin account
+INSERT INTO user (name, email, password, role)
+VALUES ('Anas', 'anas.bazi@viacesi.fr', 'Rewal136?', 'Admin');
+
+-- Action logs table (Fx15)
+CREATE TABLE action_log (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    utilisateur_id INT NOT NULL,
+    user_id INT NOT NULL,
     action TEXT NOT NULL,
-    date_action DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (utilisateur_id) REFERENCES utilisateur(id) ON DELETE CASCADE
+    action_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
 );
 
--- Table des catégories (Fx4)
-CREATE TABLE categorie (
+-- Categories table (Fx4)
+CREATE TABLE category (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nom VARCHAR(100) UNIQUE NOT NULL
+    name VARCHAR(100) UNIQUE NOT NULL
 );
 
--- Table des fournisseurs (Fx9)
-CREATE TABLE fournisseur (
+-- Suppliers table (Fx9)
+CREATE TABLE supplier (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nom VARCHAR(100) NOT NULL,
+    name VARCHAR(100) NOT NULL,
     contact VARCHAR(150) NOT NULL,
-    adresse TEXT,
-    telephone VARCHAR(20)
+    address TEXT,
+    phone VARCHAR(20)
 );
 
--- Table des produits (Fx3)
-CREATE TABLE produit (
+-- Products table (Fx3)
+CREATE TABLE product (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nom VARCHAR(100) NOT NULL,
+    name VARCHAR(100) NOT NULL,
     description TEXT,
-    prix DECIMAL(10,2) NOT NULL CHECK (prix >= 0),
-    quantite INT DEFAULT 0 CHECK (quantite >= 0),
-    seuil_alerte INT DEFAULT 5 CHECK (seuil_alerte >= 0), -- Pour Fx8
-    categorie_id INT NOT NULL,
-    fournisseur_id INT NOT NULL,
-    FOREIGN KEY (categorie_id) REFERENCES categorie(id) ON DELETE RESTRICT,
-    FOREIGN KEY (fournisseur_id) REFERENCES fournisseur(id) ON DELETE RESTRICT
+    price DECIMAL(10,2) NOT NULL CHECK (price >= 0),
+    quantity INT DEFAULT 0 CHECK (quantity >= 0),
+    alert_threshold INT DEFAULT 5 CHECK (alert_threshold >= 0),
+    category_id INT NOT NULL,
+    supplier_id INT NOT NULL,
+    FOREIGN KEY (category_id) REFERENCES category(id) ON DELETE RESTRICT,
+    FOREIGN KEY (supplier_id) REFERENCES supplier(id) ON DELETE RESTRICT
 );
 
--- Table des entrées de stock (Fx5)
-CREATE TABLE entree_stock (
+-- Stock entries table (Fx5)
+CREATE TABLE stock_entry (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    produit_id INT NOT NULL,
-    fournisseur_id INT NOT NULL,
-    quantite INT NOT NULL CHECK (quantite > 0),
-    date_entree DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (produit_id) REFERENCES produit(id) ON DELETE CASCADE,
-    FOREIGN KEY (fournisseur_id) REFERENCES fournisseur(id) ON DELETE CASCADE
+    product_id INT NOT NULL,
+    supplier_id INT NOT NULL,
+    quantity INT NOT NULL CHECK (quantity > 0),
+    entry_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (product_id) REFERENCES product(id) ON DELETE CASCADE,
+    FOREIGN KEY (supplier_id) REFERENCES supplier(id) ON DELETE CASCADE
 );
 
--- Table des sorties de stock (Fx6)
-CREATE TABLE sortie_stock (
+-- Stock exits table (Fx6)
+CREATE TABLE stock_exit (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    produit_id INT NOT NULL,
-    quantite INT NOT NULL CHECK (quantite > 0),
-    motif VARCHAR(255) NOT NULL, -- Vente, usage interne, etc.
-    date_sortie DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (produit_id) REFERENCES produit(id) ON DELETE CASCADE
+    product_id INT NOT NULL,
+    quantity INT NOT NULL CHECK (quantity > 0),
+    reason VARCHAR(255) NOT NULL, -- Sale, internal use, etc.
+    exit_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (product_id) REFERENCES product(id) ON DELETE CASCADE
 );
 
--- Table des commandes de réapprovisionnement (Fx11)
-CREATE TABLE commande (
+-- Replenishment orders table (Fx11)
+CREATE TABLE replenishment_order (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    produit_id INT NOT NULL,
-    fournisseur_id INT NOT NULL, -- Ajout pour lier au fournisseur
-    quantite INT NOT NULL CHECK (quantite > 0),
-    statut ENUM('en_attente', 'en_cours', 'livrée', 'annulée') DEFAULT 'en_attente',
-    date_creation DATETIME DEFAULT CURRENT_TIMESTAMP,
-    date_mise_a_jour DATETIME ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (produit_id) REFERENCES produit(id) ON DELETE CASCADE,
-    FOREIGN KEY (fournisseur_id) REFERENCES fournisseur(id) ON DELETE CASCADE
+    product_id INT NOT NULL,
+    supplier_id INT NOT NULL,
+    quantity INT NOT NULL CHECK (quantity > 0),
+    status ENUM('pending', 'in_progress', 'delivered', 'cancelled') DEFAULT 'pending',
+    creation_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    update_date DATETIME ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (product_id) REFERENCES product(id) ON DELETE CASCADE,
+    FOREIGN KEY (supplier_id) REFERENCES supplier(id) ON DELETE CASCADE
 );
 
--- Table des rapports générés (Fx12)
-CREATE TABLE rapport (
+-- Generated reports table (Fx12)
+CREATE TABLE report (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    type ENUM('mouvements', 'previsions') NOT NULL,
-    periode_debut DATE NOT NULL,
-    periode_fin DATE NOT NULL,
-    contenu JSON NOT NULL, -- Stockage structuré des données
-    date_generation DATETIME DEFAULT CURRENT_TIMESTAMP,
-    generateur_id INT NOT NULL,
-    FOREIGN KEY (generateur_id) REFERENCES utilisateur(id) ON DELETE CASCADE
+    type ENUM('movements', 'forecasts') NOT NULL,
+    start_period DATE NOT NULL,
+    end_period DATE NOT NULL,
+    content JSON NOT NULL, -- Structured data storage
+    generation_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    generator_id INT NOT NULL,
+    FOREIGN KEY (generator_id) REFERENCES user(id) ON DELETE CASCADE
+);
+
+-- Stores table (Fx13)
+CREATE TABLE store (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    identifier VARCHAR(50) UNIQUE NOT NULL,
+    product_type VARCHAR(100) NOT NULL,
+    creation_date DATETIME DEFAULT CURRENT_TIMESTAMP
 );

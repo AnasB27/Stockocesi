@@ -1,0 +1,10 @@
+<!-- filepath: /workspaces/Web_Rattrapage/src/Views/layout/footer.twig -->
+<footer>
+    <p>©Stock O' CESI, tout droit réservé</p>
+    <div class="footer-links">
+        {% if user.role != 'admin' %}
+            <button class="contact-link" onclick="window.location.href='/contact'">Nous contacter !</button>
+        {% endif %}
+        <button class="contact-link" onclick="window.location.href='/mentions'">Mentions légales</button>
+    </div>
+</footer>

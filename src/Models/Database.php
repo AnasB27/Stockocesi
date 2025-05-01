@@ -1,101 +1,89 @@
 <?php
 namespace App\Models;
 
+use PDO;
+use PDOException;
+use Dotenv\Dotenv;
+
 /**
- * This interface represents a database for the Stock O' CESI application.
+ * Singleton class for managing database connections.
  */
-interface Database {
-    /**
-     * Retrieves all records from a specific table.
-     *
-     * @param string $table The name of the table.
-     * @return array An array of records.
-     */
-    public function getAllRecords(string $table): array;
+class Database {
+    private static $instance = null;
+    private $conn;
 
     /**
-     * Retrieves a specific record from a table by its ID.
-     *
-     * @param string $table The name of the table.
-     * @param int $id The ID of the record to retrieve.
-     * @return mixed The retrieved record, null otherwise.
+     * Private constructor to prevent direct instantiation.
      */
-    public function getRecordById(string $table, int $id);
+    private function __construct() {
+        // Load environment variables
+        $rootPath = dirname(dirname(dirname(__FILE__))); // Adjust path to project root
+        $dotenv = Dotenv::createImmutable($rootPath);
+        $dotenv->safeLoad();
+
+        // Database configuration
+        $servername = $_ENV['DB_HOST'] ?? 'localhost';
+        $username = $_ENV['DB_USER'] ?? 'root';
+        $password = $_ENV['DB_PASS'] ?? '';
+        $dbname = $_ENV['DB_NAME'] ?? 'stockocesi';
+
+        try {
+            // Create a new PDO connection
+            $this->conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $this->conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            die("Database connection failed: " . $e->getMessage());
+        }
+    }
 
     /**
-     * Inserts a new record into a specific table.
+     * Get the singleton instance of the Database class.
      *
-     * @param string $table The name of the table.
-     * @param array $data An associative array of column names and values.
-     * @return int The last inserted ID if the record was inserted successfully, -1 otherwise.
+     * @return Database The singleton instance.
      */
-    public function insertRecord(string $table, array $data): int;
+    public static function getInstance() {
+        if (self::$instance === null) {
+            self::$instance = new Database();
+        }
+        return self::$instance;
+    }
 
     /**
-     * Updates a specific record in a table by its ID.
+     * Get the PDO connection.
      *
-     * @param string $table The name of the table.
-     * @param int $id The ID of the record to update.
-     * @param array $data An associative array of column names and values to update.
-     * @return bool True if the record was updated successfully, false otherwise.
+     * @return PDO The PDO connection.
      */
-    public function updateRecord(string $table, int $id, array $data): bool;
+    public function getConnection() {
+        return $this->conn;
+    }
 
     /**
-     * Deletes a specific record from a table by its ID.
+     * Prepare an SQL statement.
      *
-     * @param string $table The name of the table.
-     * @param int $id The ID of the record to delete.
-     * @return bool True if the record was deleted successfully, false otherwise.
+     * @param string $sql The SQL query to prepare.
+     * @return PDOStatement The prepared statement.
      */
-    public function deleteRecord(string $table, int $id): bool;
+    public function prepare($sql) {
+        return $this->conn->prepare($sql);
+    }
 
     /**
-     * Retrieves records with a specific condition.
+     * Execute a direct SQL query.
      *
-     * @param string $table The name of the table.
-     * @param array $conditions An associative array of column names and values for filtering.
-     * @return array An array of matching records.
+     * @param string $sql The SQL query to execute.
+     * @return PDOStatement The result of the query.
      */
-    public function getRecordsByCondition(string $table, array $conditions): array;
+    public function query($sql) {
+        return $this->conn->query($sql);
+    }
 
     /**
-     * Retrieves stock levels for a specific product.
+     * Get the ID of the last inserted row.
      *
-     * @param int $productId The ID of the product.
-     * @return array An array containing stock information.
+     * @return string The ID of the last inserted row.
      */
-    public function getStockByProduct(int $productId): array;
-
-    /**
-     * Retrieves all actions performed by a specific user.
-     *
-     * @param int $userId The ID of the user.
-     * @return array An array of actions performed by the user.
-     */
-    public function getActionsByUser(int $userId): array;
-
-    /**
-     * Retrieves all products below their alert threshold.
-     *
-     * @return array An array of products below their alert threshold.
-     */
-    public function getProductsBelowThreshold(): array;
-
-    /**
-     * Retrieves all pending orders.
-     *
-     * @return array An array of pending orders.
-     */
-    public function getPendingOrders(): array;
-
-    /**
-     * Generates a report based on the specified type and date range.
-     *
-     * @param string $type The type of report ('mouvements', 'previsions').
-     * @param string $startDate The start date of the report period.
-     * @param string $endDate The end date of the report period.
-     * @return array The generated report data.
-     */
-    public function generateReport(string $type, string $startDate, string $endDate): array;
+    public function getLastInsertId() {
+        return $this->conn->lastInsertId();
+    }
 }
