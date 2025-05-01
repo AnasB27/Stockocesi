@@ -2,12 +2,12 @@
 require_once ROOT_PATH . '/src/controllers/Controller.php';
 require_once ROOT_PATH . '/src/models/UserModel.php';
 
-class LoginController extends Controller {
-    private $utilisateurModel;
+class UserController extends Controller {
+    private $userModel;
 
     public function __construct() {
         parent::__construct();
-        $this->utilisateurModel = new UtilisateurModel();
+        $this->userModel = new UserModel();
     }
 
     /**
@@ -29,17 +29,23 @@ class LoginController extends Controller {
             $password = $_POST['password'] ?? '';
 
             // Authentification de l'utilisateur
-            $user = $this->utilisateurModel->authenticate($email, $password);
+            $user = $this->userModel->authenticate($email, $password);
 
             if ($user) {
                 // Stocker les informations de l'utilisateur dans la session
                 $_SESSION['user_id'] = $user['id'];
-                $_SESSION['user_nom'] = $user['nom'];
-                $_SESSION['user_prenom'] = $user['prenom'];
-                $_SESSION['user_role'] = $user['role']; // Exemple : 'admin' ou 'user'
+                $_SESSION['user_name'] = $user['name'];
+                $_SESSION['user_role'] = $user['role']; // Exemple : 'Admin', 'Manager', 'Employee'
+                $_SESSION['store_id'] = $user['store_id'] ?? null; // Magasin lié (si applicable)
 
-                // Rediriger vers la page d'accueil
-                $this->redirect('/accueil');
+                // Rediriger en fonction du rôle
+                if ($user['role'] === 'Admin') {
+                    $this->redirect('/admin/log');
+                } elseif ($user['role'] === 'Manager' || $user['role'] === 'Employee') {
+                    $this->redirect('/store/accueil');
+                } else {
+                    $this->redirect('/accueil');
+                }
             } else {
                 $error = 'Email ou mot de passe incorrect.';
             }
@@ -48,7 +54,7 @@ class LoginController extends Controller {
         // Afficher la page de connexion
         echo $this->render('login', [
             'error' => $error,
-            'pageTitle' => 'Connexion - Stock O\' CESI'
+            'pageTitle' => 'Connexion - Stock Management'
         ]);
     }
 
@@ -72,10 +78,38 @@ class LoginController extends Controller {
             );
         }
 
-        
+        // Détruire la session
         session_destroy();
 
-        
-        $this->redirect('/accueil');
+        // Rediriger vers la page de connexion
+        $this->redirect('/login');
+    }
+
+    /**
+     * Affiche les employés ou gestionnaires liés à un magasin.
+     *
+     * @param int $storeId L'ID du magasin.
+     */
+    public function showUsersByStore($storeId) {
+        $users = $this->userModel->getUsersByStore($storeId);
+
+        echo $this->render('store/users', [
+            'users' => $users,
+            'pageTitle' => 'Utilisateurs du magasin'
+        ]);
+    }
+
+    /**
+     * Assigne un utilisateur (employé ou gestionnaire) à un magasin.
+     *
+     * @param int $userId L'ID de l'utilisateur.
+     * @param int $storeId L'ID du magasin.
+     */
+    public function assignUserToStore($userId, $storeId) {
+        if ($this->userModel->assignUserToStore($userId, $storeId)) {
+            echo "Utilisateur assigné au magasin avec succès.";
+        } else {
+            echo "Erreur lors de l'assignation de l'utilisateur au magasin.";
+        }
     }
 }
