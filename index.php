@@ -52,6 +52,10 @@ switch ($uri) {
         // Call the aboutPage method of the controller
         $controller->aboutPage();
         break;
+    case 'login':
+        // Call the loginPage method of the controller
+        $controller->loginPage();
+        break;
     default:
         // Return a 404 error for unknown routes
         http_response_code(404);
