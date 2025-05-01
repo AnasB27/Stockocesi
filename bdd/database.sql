@@ -3,13 +3,15 @@ CREATE DATABASE IF NOT EXISTS stock_management CHARACTER SET utf8mb4 COLLATE utf
 USE stock_management;
 
 -- Users table (Fx1)
-CREATE TABLE user (
+CREATE TABLE IF NOT EXISTS user (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL,
+    firstname VARCHAR(100) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
+    store_id INT,
     role ENUM('Admin', 'Manager', 'Employee') NOT NULL,
-    creation_date DATETIME DEFAULT CURRENT_TIMESTAMP
+    FOREIGN KEY (store_id) REFERENCES store(id)
 );
 
 -- Insert a default admin account

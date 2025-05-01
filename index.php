@@ -13,6 +13,7 @@ use App\Controllers\UserController;
 use App\Controllers\LogController;
 use App\Controllers\AddAccountController;
 use App\Controllers\AddStoreController;
+use App\Controllers\StoreController;
 
 // Activer l'affichage des erreurs pour le débogage
 ini_set('display_errors', 1);
@@ -36,6 +37,7 @@ $userController = new UserController();
 $logController = new LogController();
 $addAccountController = new AddAccountController();
 $addStoreController = new AddStoreController();
+$storeController = new StoreController();
 
 // Route the request
 switch ($uri) {
@@ -80,6 +82,10 @@ switch ($uri) {
         break;
     case 'logout':
         $userController->logout();
+        break;
+    case 'store':
+        $storeController = new StoreController();
+        $storeController->showStorePage();
         break;
     case 'admin/log':
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['clear_logs'])) {

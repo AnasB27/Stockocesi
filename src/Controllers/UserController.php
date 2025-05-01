@@ -2,13 +2,16 @@
 namespace App\Controllers;
 
 use App\Models\UserModel;
+use App\Models\LogModel;
 
 class UserController extends Controller {
     private $userModel;
+    private $logModel;
 
     public function __construct() {
         parent::__construct();
         $this->userModel = new UserModel();
+        $this->logModel = new LogModel();
     }
 
     /**
@@ -39,29 +42,38 @@ class UserController extends Controller {
     /**
      * Gère la connexion de l'utilisateur.
      */
+
     public function login() {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-    
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $email = $_POST['email'] ?? '';
             $password = $_POST['password'] ?? '';
-    
+
             $user = $this->userModel->authenticate($email, $password);
-    
+
             if ($user) {
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['user_name'] = $user['name'];
                 $_SESSION['user_role'] = $user['role'];
                 $_SESSION['store_id'] = $user['store_id'] ?? null;
-    
-                // Rediriger en fonction du rôle (correction du chemin)
+
+                // Log de connexion
+                $this->logModel->addLog([
+                    'user_id' => $user['id'],
+                    'user_name' => $user['name'],
+                    'action' => 'Connexion',
+                    'details' => 'Connexion réussie',
+                    'timestamp' => date('Y-m-d H:i:s')
+                ]);
+
+                // Redirection en fonction du rôle
                 if ($user['role'] === 'Admin') {
-                    $this->redirect('admin/log'); // Enlever le slash initial
-                } elseif (in_array($user['role'], ['Manager', 'Employee'])) {
-                    $this->redirect('store/accueil');
+                    $this->redirect('accueil');
                 } else {
+                    // Pour les employés et gestionnaires
                     $this->redirect('accueil');
                 }
             } else {
@@ -75,7 +87,6 @@ class UserController extends Controller {
             $this->loginPage();
         }
     }
-
     /**
      * Gère la déconnexion de l'utilisateur.
      */
