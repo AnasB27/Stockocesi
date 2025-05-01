@@ -55,7 +55,11 @@ switch ($uri) {
         $taskController->aboutPage();
         break;
     case 'login':
-        $userController->login();
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $userController->login();
+        } else {
+            $userController->loginPage();
+        }
         break;
     case 'logout':
         $userController->logout();

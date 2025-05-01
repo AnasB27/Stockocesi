@@ -30,7 +30,9 @@ class UserController extends Controller {
      */
     public function loginPage() {
         echo $this->render('account/login', [
-            'pageTitle' => 'Connexion'
+            'pageTitle' => 'Connexion',
+            'current_page' => 'login',
+            'error' => ''
         ]);
     }
 

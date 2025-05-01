@@ -1,4 +1,3 @@
-<!-- filepath: /workspaces/Web_Rattrapage/templates/account/login.twig -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -9,23 +8,26 @@
     <link rel="stylesheet" href="/stockocesi/static/css/main.css">
 </head>
 <body>
-    {% include 'layout/header.twig' %}
+    {% include 'layout/header.twig' with {'current_page': 'login'} %}
 
     <main>
         <h1>Connexion</h1>
         <form action="/stockocesi/login" method="post">
-            <div>
-                <label for="email">Adresse mail</label><br>
+            <div class="form-group">
+                <label for="email">Adresse mail</label>
                 <input type="email" id="email" name="email" required>
             </div>
-            <div>
-                <label for="password">Mot de passe</label><br>
+            
+            <div class="form-group">
+                <label for="password">Mot de passe</label>
                 <input type="password" id="password" name="password" required>
             </div>
-            {% if error %}
+            
+            {% if error is defined and error is not empty %}
                 <div class="error-message">{{ error }}</div>
             {% endif %}
-            <button type="submit" class="main-button">Connexion</button>
+            
+            <button type="submit">Connexion</button>
         </form>
     </main>
 
