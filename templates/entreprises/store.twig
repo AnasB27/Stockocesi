@@ -42,7 +42,7 @@
                 <p class="no-products">Aucun produit en stock.</p>
             {% else %}
                 {% for product in products %}
-                    <div class="stock-item">
+                    <div class="stock-item" data-id="{{ product.id }}" data-category="{{ product.category_name }}">
                         <div class="product-info">
                             <span><strong>Produit :</strong> {{ product.name }}</span>
                             <span><strong>Catégorie :</strong> {{ product.category_name }}</span>
@@ -68,10 +68,9 @@
                 {% endfor %}
             {% endif %}
         </div>
-    </main>
 
-    <!-- Modal d'ajout de produit -->
-    <div id="addProductModal" class="modal">
+        <!-- Modal d'ajout de produit -->
+        <div id="addProductModal" class="modal">
             <div class="modal-content">
                 <span class="close">&times;</span>
                 <h2>Ajouter un produit</h2>
@@ -82,6 +81,9 @@
                     </div>
                     <div class="form-group">
                         <label for="categorySelect">Catégorie</label>
+                        {% if categories is empty %}
+                            <p class="error-message">Aucune catégorie disponible</p>
+                        {% endif %}
                         <select id="categorySelect" name="category_id" required>
                             <option value="">Sélectionner une catégorie</option>
                             {% for category in categories %}
@@ -108,7 +110,17 @@
                 </form>
             </div>
         </div>
+    </main>
+
     {% include 'layout/footer.twig' %}
+    
+    <!-- Debug information -->
+    {% if debug %}
+    <script>
+        console.log('Categories:', {{ categories|json_encode|raw }});
+    </script>
+    {% endif %}
+    
     <script src="/stockocesi/static/js/stock.js"></script>
     <script src="/stockocesi/static/js/add-stock.js"></script>
 </body>

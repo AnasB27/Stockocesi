@@ -1,3 +1,4 @@
+-- Active: 1738234474941@@127.0.0.1@3306@stock_management
 -- Create the database
 CREATE DATABASE IF NOT EXISTS stock_management CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE stock_management;
@@ -39,15 +40,26 @@ CREATE TABLE IF NOT EXISTS log (
 );
 
 -- Categories table (Fx4)
+-- Création de la table categories si elle n'existe pas
 CREATE TABLE IF NOT EXISTS category (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL UNIQUE,
-    description TEXT,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Insertion des catégories par défaut
+INSERT INTO category (name) VALUES 
+('Alimentaire'),
+('Boissons'),
+('Produits d\'entretien'),
+('Fournitures de bureau'),
+('Électronique'),
+('Hygiène'),
+('Autres')
+ON DUPLICATE KEY UPDATE name = VALUES(name);
+
 -- Suppliers table (Fx9)
-CREATE TABLE supplier (
+CREATE TABLE IF NOT EXISTS supplier (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     contact VARCHAR(150) NOT NULL,
@@ -56,7 +68,7 @@ CREATE TABLE supplier (
 );
 
 -- Products table (Fx3)
-CREATE TABLE product (
+CREATE TABLE IF NOT EXISTS product (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     description TEXT,
@@ -99,7 +111,7 @@ CREATE TABLE IF NOT EXISTS stock_movements (
 );
 
 -- Generated reports table (Fx12)
-CREATE TABLE report (
+CREATE TABLE IF NOT EXISTS report (
     id INT AUTO_INCREMENT PRIMARY KEY,
     type ENUM('movements', 'forecasts') NOT NULL,
     start_period DATE NOT NULL,
@@ -112,17 +124,12 @@ CREATE TABLE report (
 
 -- Insert default admin account (make sure to hash the password in production)
 INSERT INTO store (name, email, identifier, product_type) 
-VALUES ('Siège', 'admin@stockocesi.fr', 'SIEGE001', 'Administration')
+VALUES ('Siège', 'admin@stockocesi.fr', 'SIEGE001', 'Admin')
 ON DUPLICATE KEY UPDATE name = name;
 
 INSERT INTO user (name, email, password, role)
 VALUES ('Anas', 'anas.bazi@viacesi.fr', 'Rewal136?', 'Admin');
-    (SELECT id FROM store WHERE identifier = 'SIEGE001'))
-ON DUPLICATE KEY UPDATE email = email;
 
--- Add some default categories
-INSERT INTO category (name, description) VALUES 
-    ('Informatique', 'Matériel informatique'),
-    ('Fournitures', 'Fournitures de bureau'),
-    ('Mobilier', 'Mobilier de bureau')
-ON DUPLICATE KEY UPDATE name = name;
+INSERT INTO product (name, description, price, quantity, alert_threshold, category_id, supplier_id)
+VALUES ('Produit Test', 'Description du produit test', 10.00, 100, 5, 1, 1)
+
