@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ pageTitle }}</title>
-    <link rel="stylesheet" href="/stockocesi/static/css/stock.css">
     <link rel="stylesheet" href="/stockocesi/static/css/main.css">
+    <link rel="stylesheet" href="/stockocesi/static/css/stock.css">
 </head>
 <body>
-    {% include 'layout/header.twig' with {'current_page': 'store'} %}
+    {% include 'layout/header.twig' %}
 
     <main>
         <div class="search-filter-container">
@@ -17,19 +17,6 @@
                 <button class="filter-button" id="filterButton">
                     <img src="/stockocesi/static/assets/img/filter.png" alt="Filtrer">
                 </button>
-            </div>
-            <div class="filter-panel" id="filterPanel" style="display: none;">
-                <select id="categoryFilter">
-                    <option value="">Toutes les catégories</option>
-                    {% for category in categories %}
-                        <option value="{{ category.id }}">{{ category.name }}</option>
-                    {% endfor %}
-                </select>
-                <div class="price-filter">
-                    <input type="number" id="minPrice" placeholder="Prix min">
-                    <input type="number" id="maxPrice" placeholder="Prix max">
-                </div>
-                <button id="applyFilters">Appliquer les filtres</button>
             </div>
         </div>
 
@@ -55,28 +42,28 @@
                 <p class="no-products">Aucun produit en stock.</p>
             {% else %}
                 {% for product in products %}
-                    <div class="stock-item" data-product-id="{{ product.id }}" data-category="{{ product.category_id }}">
+                    <div class="stock-item">
                         <div class="product-info">
                             <span><strong>Produit :</strong> {{ product.name }}</span>
                             <span><strong>Catégorie :</strong> {{ product.category_name }}</span>
-                            <span class="quantity {% if product.quantity <= product.alert_threshold %}warning{% endif %}">
-                                <strong>Quantité :</strong> {{ product.quantity }}
+                            <span class="quantity {% if product.quantite <= product.seuil_alerte %}warning{% endif %}">
+                                <strong>Quantité :</strong> {{ product.quantite }}
                             </span>
-                            <span><strong>Prix :</strong> {{ product.price|number_format(2, ',', ' ') }} €</span>
+                            <span><strong>Prix :</strong> {{ product.prix|number_format(2, ',', ' ') }} €</span>
                         </div>
-                        <div class="product-actions">
-                            {% if session.user_role in ['Admin', 'Manager'] %}
-                                <button class="edit-button" onclick="editProduct({{ product.id }})">
+                        {% if canManageStock %}
+                            <div class="product-actions">
+                                <button onclick="editProduct({{ product.id }})">
                                     <img src="/stockocesi/static/assets/img/edit.png" alt="Modifier">
                                 </button>
-                                <button class="delete-button" onclick="confirmDelete({{ product.id }})">
-                                    <img src="/stockocesi/static/assets/img/poubelle.jpg" alt="Supprimer">
+                                <button onclick="confirmDelete({{ product.id }})">
+                                    <img src="/stockocesi/static/assets/img/delete.png" alt="Supprimer">
                                 </button>
-                            {% endif %}
-                            <button class="history-button" onclick="showProductHistory({{ product.id }})">
-                                <img src="/stockocesi/static/assets/img/history.png" alt="Historique">
-                            </button>
-                        </div>
+                                <button onclick="showHistory({{ product.id }})">
+                                    <img src="/stockocesi/static/assets/img/history.png" alt="Historique">
+                                </button>
+                            </div>
+                        {% endif %}
                     </div>
                 {% endfor %}
             {% endif %}
@@ -85,45 +72,43 @@
 
     <!-- Modal d'ajout de produit -->
     <div id="addProductModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Ajouter un produit</h2>
-            <form id="addProductForm">
-                <div class="form-group">
-                    <label for="productName">Nom du produit</label>
-                    <input type="text" id="productName" name="name" required>
-                </div>
-                <div class="form-group">
-                    <label for="categorySelect">Catégorie</label>
-                    <select id="categorySelect" name="category_id" required>
-                        <option value="">Sélectionner une catégorie</option>
-                        {% for category in categories %}
-                            <option value="{{ category.id }}">{{ category.name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="productQuantity">Quantité</label>
-                    <input type="number" id="productQuantity" name="quantity" min="0" required>
-                </div>
-                <div class="form-group">
-                    <label for="productPrice">Prix (€)</label>
-                    <input type="number" id="productPrice" name="price" min="0" step="0.01" required>
-                </div>
-                <div class="form-group">
-                    <label for="alertThreshold">Seuil d'alerte</label>
-                    <input type="number" id="alertThreshold" name="alert_threshold" min="1" required>
-                </div>
-                <div class="modal-buttons">
-                    <button type="submit" class="btn-primary">Ajouter</button>
-                    <button type="button" class="btn-secondary" onclick="closeAddProductModal()">Annuler</button>
-                </div>
-            </form>
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Ajouter un produit</h2>
+                <form id="addProductForm">
+                    <div class="form-group">
+                        <label for="productName">Nom du produit</label>
+                        <input type="text" id="productName" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="categorySelect">Catégorie</label>
+                        <select id="categorySelect" name="category_id" required>
+                            <option value="">Sélectionner une catégorie</option>
+                            {% for category in categories %}
+                                <option value="{{ category.id }}">{{ category.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="productQuantity">Quantité</label>
+                        <input type="number" id="productQuantity" name="quantity" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="productPrice">Prix (€)</label>
+                        <input type="number" id="productPrice" name="price" min="0" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="alertThreshold">Seuil d'alerte</label>
+                        <input type="number" id="alertThreshold" name="alert_threshold" min="1" required>
+                    </div>
+                    <div class="modal-buttons">
+                        <button type="submit" class="btn-primary">Ajouter</button>
+                        <button type="button" class="btn-secondary" onclick="closeAddProductModal()">Annuler</button>
+                    </div>
+                </form>
+            </div>
         </div>
-    </div>
-
     {% include 'layout/footer.twig' %}
-
     <script src="/stockocesi/static/js/stock.js"></script>
     <script src="/stockocesi/static/js/add-stock.js"></script>
 </body>

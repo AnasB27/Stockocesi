@@ -17,6 +17,7 @@ class StockController extends Controller {
 
     
    
+    
     public function showStock() {
         if (!isset($_SESSION['user_id'])) {
             $this->redirect('login');
@@ -25,15 +26,16 @@ class StockController extends Controller {
     
         $stocks = $this->stockModel->getStocksByEntreprise($_SESSION['store_id']);
         $lowStockProducts = $this->stockModel->getLowStockProducts($_SESSION['store_id']);
+        $categories = $this->stockModel->getAllCategories(); // Récupération des catégories
     
-        return $this->render('store/store', [ // Correction du chemin du template
+        return $this->render('store/store', [
             'pageTitle' => 'Gestion des stocks - Stock O\' CESI',
             'current_page' => 'stock',
             'products' => $stocks,
             'lowStockProducts' => $lowStockProducts,
             'session' => $_SESSION,
             'canManageStock' => in_array($_SESSION['user_role'], ['Admin', 'Manager']),
-            'categories' => $this->stockModel->getAllCategories() // Ajout des catégories
+            'categories' => $categories // Passage des catégories au template
         ]);
     }
     
