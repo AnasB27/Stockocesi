@@ -5,8 +5,14 @@
  */
 
 require "vendor/autoload.php";
+
+// Charger les variables d'environnement
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv->safeLoad();
+
 // Définir la constante ROOT_PATH pour les chemins absolus
 define('ROOT_PATH', __DIR__);
+
 
 use App\Controllers\TaskController;
 use App\Controllers\UserController;
