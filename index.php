@@ -14,6 +14,7 @@ use App\Controllers\LogController;
 use App\Controllers\AddAccountController;
 use App\Controllers\AddStoreController;
 use App\Controllers\StoreController;
+use App\Controllers\StockController;
 
 // Activer l'affichage des erreurs pour le débogage
 ini_set('display_errors', 1);
@@ -38,6 +39,7 @@ $logController = new LogController();
 $addAccountController = new AddAccountController();
 $addStoreController = new AddStoreController();
 $storeController = new StoreController();
+$stockController = new StockController();
 
 // Route the request
 switch ($uri) {
@@ -64,6 +66,35 @@ switch ($uri) {
         break;
     case 'about':
         $taskController->aboutPage();
+        break;
+    case 'stock':
+        $stockController->showStock();
+        break;
+    case 'stock/add':
+        if (in_array($_SESSION['user_role'], ['Admin', 'Manager'])) {
+            $stockController->addStock();
+        } else {
+            $_SESSION['error_message'] = "Accès refusé";
+            header('Location: /stockocesi/stock');
+        }
+        break;
+    case 'stock/delete':
+        if (in_array($_SESSION['user_role'], ['Admin', 'Manager'])) {
+            $stockController->deleteStock($_POST['stock_id']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Accès refusé']);
+        }
+        break;
+    case 'stock/update':
+        if (in_array($_SESSION['user_role'], ['Admin', 'Manager'])) {
+            $stockController->updateStock();
+        } else {
+            $_SESSION['error_message'] = "Accès refusé";
+            header('Location: /stockocesi/stock');
+        }
+        break;
+    case 'stock/movement':
+        $stockController->recordStockMovement();
         break;
     case 'admin/add-account':
         $addAccountController = new AddAccountController();

@@ -79,13 +79,19 @@ class Controller {
                 $data['session'] = $_SESSION;
             }
 
-            return $this->templateEngine->render($template . '.twig', $data);
+            // Ajouter le chemin de base pour les assets
+            $data['base_url'] = '/stockocesi';
+            
+            // Afficher directement le contenu
+            echo $this->templateEngine->render($template . '.twig', $data);
+            return null;
         } catch (\Twig\Error\LoaderError $e) {
-            throw new \Exception("Erreur de chargement du template : " . $e->getMessage());
-        } catch (\Twig\Error\RuntimeError $e) {
-            throw new \Exception("Erreur d'exécution du template : " . $e->getMessage());
-        } catch (\Twig\Error\SyntaxError $e) {
-            throw new \Exception("Erreur de syntaxe dans le template : " . $e->getMessage());
+            // Log l'erreur et afficher un message plus clair
+            error_log($e->getMessage());
+            die("Erreur de chargement du template '$template.twig'. Vérifiez que le fichier existe dans le dossier templates.");
+        } catch (\Twig\Error\RuntimeError | \Twig\Error\SyntaxError $e) {
+            error_log($e->getMessage());
+            die("Erreur dans le template '$template.twig': " . $e->getMessage());
         }
     }
 }

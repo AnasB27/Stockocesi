@@ -3,6 +3,17 @@ CREATE DATABASE IF NOT EXISTS stock_management CHARACTER SET utf8mb4 COLLATE utf
 USE stock_management;
 
 -- Users table (Fx1)
+CREATE TABLE IF NOT EXISTS store (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    identifier VARCHAR(50) NOT NULL UNIQUE,
+    product_type VARCHAR(100) NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Users table (Fx1)
 CREATE TABLE IF NOT EXISTS user (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -11,12 +22,10 @@ CREATE TABLE IF NOT EXISTS user (
     password VARCHAR(255) NOT NULL,
     store_id INT,
     role ENUM('Admin', 'Manager', 'Employee') NOT NULL,
-    FOREIGN KEY (store_id) REFERENCES store(id)
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (store_id) REFERENCES store(id) ON DELETE SET NULL
 );
 
--- Insert a default admin account
-INSERT INTO user (name, email, password, role)
-VALUES ('Anas', 'anas.bazi@viacesi.fr', 'Rewal136?', 'Admin');
 
 -- Action logs table (Fx15)
 CREATE TABLE IF NOT EXISTS log (
@@ -30,9 +39,11 @@ CREATE TABLE IF NOT EXISTS log (
 );
 
 -- Categories table (Fx4)
-CREATE TABLE category (
+CREATE TABLE IF NOT EXISTS category (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) UNIQUE NOT NULL
+    name VARCHAR(100) NOT NULL UNIQUE,
+    description TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Suppliers table (Fx9)
@@ -59,37 +70,32 @@ CREATE TABLE product (
 );
 
 -- Stock entries table (Fx5)
-CREATE TABLE stock_entry (
+CREATE TABLE IF NOT EXISTS stocks (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    product_id INT NOT NULL,
-    supplier_id INT NOT NULL,
-    quantity INT NOT NULL CHECK (quantity > 0),
-    entry_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (product_id) REFERENCES product(id) ON DELETE CASCADE,
-    FOREIGN KEY (supplier_id) REFERENCES supplier(id) ON DELETE CASCADE
-);
-
--- Stock exits table (Fx6)
-CREATE TABLE stock_exit (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    product_id INT NOT NULL,
-    quantity INT NOT NULL CHECK (quantity > 0),
-    reason VARCHAR(255) NOT NULL, -- Sale, internal use, etc.
-    exit_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (product_id) REFERENCES product(id) ON DELETE CASCADE
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    quantite INT NOT NULL DEFAULT 0,
+    prix DECIMAL(10,2) NOT NULL,
+    seuil_alerte INT DEFAULT 10,
+    category_id INT,
+    entreprise_id INT NOT NULL,
+    date_ajout DATETIME DEFAULT CURRENT_TIMESTAMP,
+    date_modification DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (category_id) REFERENCES category(id) ON DELETE SET NULL,
+    FOREIGN KEY (entreprise_id) REFERENCES store(id)
 );
 
 -- Replenishment orders table (Fx11)
-CREATE TABLE replenishment_order (
+CREATE TABLE IF NOT EXISTS stock_movements (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    product_id INT NOT NULL,
-    supplier_id INT NOT NULL,
-    quantity INT NOT NULL CHECK (quantity > 0),
-    status ENUM('pending', 'in_progress', 'delivered', 'cancelled') DEFAULT 'pending',
-    creation_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    update_date DATETIME ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (product_id) REFERENCES product(id) ON DELETE CASCADE,
-    FOREIGN KEY (supplier_id) REFERENCES supplier(id) ON DELETE CASCADE
+    stock_id INT NOT NULL,
+    quantity INT NOT NULL,
+    movement_type ENUM('entry', 'exit') NOT NULL,
+    reason TEXT,
+    user_id INT NOT NULL,
+    movement_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (stock_id) REFERENCES stocks(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES user(id)
 );
 
 -- Generated reports table (Fx12)
@@ -104,13 +110,19 @@ CREATE TABLE report (
     FOREIGN KEY (generator_id) REFERENCES user(id) ON DELETE CASCADE
 );
 
--- Stores table (Fx13)
-CREATE TABLE IF NOT EXISTS store (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    email VARCHAR(255) NOT NULL,
-    identifier VARCHAR(50) NOT NULL UNIQUE,
-    product_type VARCHAR(100) NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
+-- Insert default admin account (make sure to hash the password in production)
+INSERT INTO store (name, email, identifier, product_type) 
+VALUES ('Siège', 'admin@stockocesi.fr', 'SIEGE001', 'Administration')
+ON DUPLICATE KEY UPDATE name = name;
+
+INSERT INTO user (name, email, password, role)
+VALUES ('Anas', 'anas.bazi@viacesi.fr', 'Rewal136?', 'Admin');
+    (SELECT id FROM store WHERE identifier = 'SIEGE001'))
+ON DUPLICATE KEY UPDATE email = email;
+
+-- Add some default categories
+INSERT INTO category (name, description) VALUES 
+    ('Informatique', 'Matériel informatique'),
+    ('Fournitures', 'Fournitures de bureau'),
+    ('Mobilier', 'Mobilier de bureau')
+ON DUPLICATE KEY UPDATE name = name;

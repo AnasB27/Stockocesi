@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ pageTitle }}</title>
+    <link rel="stylesheet" href="/stockocesi/static/css/stock.css">
+    <link rel="stylesheet" href="/stockocesi/static/css/main.css">
+</head>
+<body>
+    {% include 'layout/header.twig' with {'current_page': 'store'} %}
+
+    <main>
+        <div class="search-filter-container">
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Rechercher un produit" class="search-input">
+                <button class="filter-button" id="filterButton">
+                    <img src="/stockocesi/static/assets/img/filter.png" alt="Filtrer">
+                </button>
+            </div>
+            <div class="filter-panel" id="filterPanel" style="display: none;">
+                <select id="categoryFilter">
+                    <option value="">Toutes les catégories</option>
+                    {% for category in categories %}
+                        <option value="{{ category.id }}">{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+                <div class="price-filter">
+                    <input type="number" id="minPrice" placeholder="Prix min">
+                    <input type="number" id="maxPrice" placeholder="Prix max">
+                </div>
+                <button id="applyFilters">Appliquer les filtres</button>
+            </div>
+        </div>
+
+        <div class="controls-container">
+            <div class="add-product-container">
+                {% if session.user_role == 'Admin' or session.user_role == 'Manager' %}
+                    <button class="add-product-button" onclick="window.location.href='/stockocesi/store/add-product'">
+                        Ajouter un produit
+                    </button>
+                {% endif %}
+            </div>
+            <div class="stock-alerts">
+                {% if lowStockProducts is not empty %}
+                    <div class="alert warning">
+                        Produits en stock faible : {{ lowStockProducts|length }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="stock-list">
+            {% if products is empty %}
+                <p class="no-products">Aucun produit en stock.</p>
+            {% else %}
+                {% for product in products %}
+                    <div class="stock-item" data-product-id="{{ product.id }}" data-category="{{ product.category_id }}">
+                        <div class="product-info">
+                            <span><strong>Produit :</strong> {{ product.name }}</span>
+                            <span><strong>Catégorie :</strong> {{ product.category_name }}</span>
+                            <span class="quantity {% if product.quantity <= product.alert_threshold %}warning{% endif %}">
+                                <strong>Quantité :</strong> {{ product.quantity }}
+                            </span>
+                            <span><strong>Prix :</strong> {{ product.price|number_format(2, ',', ' ') }} €</span>
+                        </div>
+                        <div class="product-actions">
+                            {% if session.user_role in ['Admin', 'Manager'] %}
+                                <button class="edit-button" onclick="editProduct({{ product.id }})">
+                                    <img src="/stockocesi/static/assets/img/edit.png" alt="Modifier">
+                                </button>
+                                <button class="delete-button" onclick="confirmDelete({{ product.id }})">
+                                    <img src="/stockocesi/static/assets/img/poubelle.jpg" alt="Supprimer">
+                                </button>
+                            {% endif %}
+                            <button class="history-button" onclick="showProductHistory({{ product.id }})">
+                                <img src="/stockocesi/static/assets/img/history.png" alt="Historique">
+                            </button>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </main>
+
+    {% include 'layout/footer.twig' %}
+
+    <script src="/stockocesi/static/js/stock.js"></script>
+</body>
+</html>

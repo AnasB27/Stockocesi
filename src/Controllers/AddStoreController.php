@@ -21,7 +21,7 @@ class AddStoreController extends Controller {
     public function showAddStore() {
         $this->ensureAdmin();
         
-        echo $this->render('entreprises/add-store', [
+        echo $this->render('store/add-store', [
             'pageTitle' => 'Ajouter un magasin - Stock O\' CESI',
             'current_page' => 'add-store',
             'error' => $_SESSION['error_message'] ?? null,
