@@ -10,14 +10,28 @@ class StockModel {
     }
 
     /**
-     * Ajoute un nouvel article au stock
-     */
-    public function addStock($nom, $quantite, $prix, $entrepriseId) {
-        $sql = "INSERT INTO stocks (nom, quantite, prix, entreprise_id, date_ajout, seuil_alerte) 
-                VALUES (?, ?, ?, ?, NOW(), 10)";
-        $stmt = $this->db->prepare($sql);
-        return $stmt->execute([$nom, $quantite, $prix, $entrepriseId]);
-    }
+ * Ajoute un nouvel article au stock
+ * @param string $nom Nom du produit
+ * @param int $quantite Quantité du produit
+ * @param float $prix Prix du produit
+ * @param int $entrepriseId ID de l'entreprise
+ * @param int $categoryId ID de la catégorie
+ * @param int $alertThreshold Seuil d'alerte
+ * @return bool
+ */
+public function addStock($nom, $quantite, $prix, $entrepriseId, $categoryId, $alertThreshold) {
+    $sql = "INSERT INTO stocks (name, quantite, prix, entreprise_id, category_id, seuil_alerte, date_ajout) 
+            VALUES (?, ?, ?, ?, ?, ?, NOW())";
+    $stmt = $this->db->prepare($sql);
+    return $stmt->execute([
+        $nom, 
+        $quantite, 
+        $prix, 
+        $entrepriseId, 
+        $categoryId, 
+        $alertThreshold
+    ]);
+}
 
     /**
      * Met à jour les informations d'un article
@@ -55,6 +69,17 @@ class StockModel {
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$entrepriseId]);
         return $stmt->fetchAll();
+    }
+
+    /**
+     * Récupère toutes les catégories
+     * @return array Liste des catégories
+     */
+    public function getAllCategories(): array {
+        $sql = "SELECT id, name FROM categories ORDER BY name ASC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
     /**

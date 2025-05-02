@@ -16,6 +16,7 @@ class StockController extends Controller {
     }
 
     
+   
     public function showStock() {
         if (!isset($_SESSION['user_id'])) {
             $this->redirect('login');
@@ -25,45 +26,38 @@ class StockController extends Controller {
         $stocks = $this->stockModel->getStocksByEntreprise($_SESSION['store_id']);
         $lowStockProducts = $this->stockModel->getLowStockProducts($_SESSION['store_id']);
     
-        // Supprimer le echo et utiliser return
-        return $this->render('store', [ // Changement du chemin du template
+        return $this->render('store/store', [ // Correction du chemin du template
             'pageTitle' => 'Gestion des stocks - Stock O\' CESI',
             'current_page' => 'stock',
             'products' => $stocks,
             'lowStockProducts' => $lowStockProducts,
             'session' => $_SESSION,
-            'canManageStock' => in_array($_SESSION['user_role'], ['Admin', 'Manager'])
+            'canManageStock' => in_array($_SESSION['user_role'], ['Admin', 'Manager']),
+            'categories' => $this->stockModel->getAllCategories() // Ajout des catégories
         ]);
     }
-
+    
     public function addStock() {
         $this->checkManagerPermission();
-
+    
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Initialisation des variables avec des valeurs par défaut
-            $prix = 0.0;
-            $nom = '';
-            $quantite = 0;
-
-            // Récupération des valeurs POST avec vérification
-            if (isset($_POST['name']) && !empty($_POST['name'])) {
-                $nom = $_POST['name'];
-            }
-            if (isset($_POST['quantity'])) {
-                $quantite = (int)$_POST['quantity'];
-            }
-            if (isset($_POST['price'])) {
-                $prix = (float)$_POST['price'];
-            }
-            
+            $response = ['success' => false, 'message' => ''];
+        
+            // Récupération et validation des données
+            $nom = $_POST['name'] ?? '';
+            $quantite = isset($_POST['quantity']) ? (int)$_POST['quantity'] : 0;
+            $prix = isset($_POST['price']) ? (float)$_POST['price'] : 0.0;
+            $categoryId = isset($_POST['category_id']) ? (int)$_POST['category_id'] : 0;
+            $alertThreshold = isset($_POST['alert_threshold']) ? (int)$_POST['alert_threshold'] : 5;
+        
             // Validation des données
-            if (empty($nom) || $quantite < 0 || $prix < 0) {
-                $_SESSION['error_message'] = "Données invalides";
-                $this->redirect('stock');
-                return;
+            if (empty($nom) || $quantite < 0 || $prix < 0 || $categoryId <= 0) {
+                $response['message'] = "Données invalides";
+                echo json_encode($response);
+                exit;
             }
-            
-            if ($this->stockModel->addStock($nom, $quantite, $prix, $_SESSION['store_id'])) {
+                
+            if ($this->stockModel->addStock($nom, $quantite, $prix, $_SESSION['store_id'], $categoryId, $alertThreshold)) {
                 $this->logModel->addLog([
                     'user_id' => $_SESSION['user_id'],
                     'user_name' => $_SESSION['user_name'],
@@ -71,13 +65,17 @@ class StockController extends Controller {
                     'details' => "Ajout du produit $nom (Qté: $quantite, Prix: {$prix}€)",
                     'timestamp' => date('Y-m-d H:i:s')
                 ]);
-                $_SESSION['success_message'] = "Produit ajouté avec succès";
+                $response['success'] = true;
+                $response['message'] = "Produit ajouté avec succès";
             } else {
-                $_SESSION['error_message'] = "Erreur lors de l'ajout du produit";
+                $response['message'] = "Erreur lors de l'ajout du produit";
             }
-            $this->redirect('stock');
+            
+            echo json_encode($response);
+            exit;
         }
     }
+    
     public function deleteStock($stockId) {
         $this->checkManagerPermission();
     

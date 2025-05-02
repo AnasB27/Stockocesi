@@ -1,19 +1,19 @@
 <?php return array(
     'root' => array(
-        'name' => 'cesi/myt_todoo',
+        'name' => 'cesi/stockocesi',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '5c297daa191800fd140d076b0514d8d01810d137',
+        'reference' => '56c342fd5a4a6a1876ff706ade619fbd0848864a',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
         'dev' => true,
     ),
     'versions' => array(
-        'cesi/myt_todoo' => array(
+        'cesi/stockocesi' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '5c297daa191800fd140d076b0514d8d01810d137',
+            'reference' => '56c342fd5a4a6a1876ff706ade619fbd0848864a',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
