@@ -23,14 +23,16 @@ class StockController extends Controller {
         }
     
         try {
+            // Déboguer la valeur de store_id
+            error_log('store_id: ' . $_SESSION['store_id']);
+            
             $stocks = $this->stockModel->getStocksByEntreprise($_SESSION['store_id']);
+            // Déboguer les stocks récupérés
+            error_log('Stocks récupérés : ' . print_r($stocks, true));
+            
             $lowStockProducts = $this->stockModel->getLowStockProducts($_SESSION['store_id']);
             $categories = $this->stockModel->getAllCategories();
     
-            // Debug des catégories
-            error_log('Categories récupérées : ' . print_r($categories, true));
-    
-            // Correction ici : echo au lieu de return
             echo $this->render('entreprises/store.twig', [
                 'pageTitle' => 'Gestion des stocks - Stock O\' CESI',
                 'current_page' => 'stock',
