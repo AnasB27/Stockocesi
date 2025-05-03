@@ -2,13 +2,16 @@
 namespace App\Controllers;
 
 use App\Models\UserModel;
+use App\Models\LogModel;
 
 class UserController extends Controller {
     private $userModel;
+    private $logModel;
 
     public function __construct() {
         parent::__construct();
         $this->userModel = new UserModel();
+        $this->logModel = new LogModel();
     }
 
     /**
@@ -30,58 +33,60 @@ class UserController extends Controller {
      */
     public function loginPage() {
         echo $this->render('account/login', [
-            'pageTitle' => 'Connexion'
+            'pageTitle' => 'Connexion',
+            'current_page' => 'login',
+            'error' => ''
         ]);
     }
 
     /**
      * Gère la connexion de l'utilisateur.
      */
+
     public function login() {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
 
-        // Si l'utilisateur est déjà connecté, redirigez-le vers la page d'accueil
-        if (isset($_SESSION['user_id'])) {
-            $this->redirect('/accueil');
-        }
-
-        $error = '';
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $email = $_POST['email'] ?? '';
             $password = $_POST['password'] ?? '';
 
-            // Authentification de l'utilisateur
             $user = $this->userModel->authenticate($email, $password);
 
             if ($user) {
-                // Stocker les informations de l'utilisateur dans la session
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['user_name'] = $user['name'];
-                $_SESSION['user_role'] = $user['role']; // Exemple : 'Admin', 'Manager', 'Employee'
-                $_SESSION['store_id'] = $user['store_id'] ?? null; // Magasin lié (si applicable)
+                $_SESSION['user_role'] = $user['role'];
+                $_SESSION['store_id'] = $user['store_id'] ?? null;
 
-                // Rediriger en fonction du rôle
+                // Log de connexion
+                $this->logModel->addLog([
+                    'user_id' => $user['id'],
+                    'user_name' => $user['name'],
+                    'action' => 'Connexion',
+                    'details' => 'Connexion réussie',
+                    'timestamp' => date('Y-m-d H:i:s')
+                ]);
+
+                // Redirection en fonction du rôle
                 if ($user['role'] === 'Admin') {
-                    $this->redirect('/admin/log');
-                } elseif (in_array($user['role'], ['Manager', 'Employee'])) {
-                    $this->redirect('/store/accueil');
+                    $this->redirect('accueil');
                 } else {
-                    $this->redirect('/accueil');
+                    // Pour les employés et gestionnaires
+                    $this->redirect('accueil');
                 }
             } else {
-                $error = 'Email ou mot de passe incorrect.';
+                echo $this->render('account/login', [
+                    'pageTitle' => 'Connexion',
+                    'current_page' => 'login',
+                    'error' => 'Email ou mot de passe incorrect'
+                ]);
             }
+        } else {
+            $this->loginPage();
         }
-
-        // Afficher la page de connexion avec un message d'erreur (le cas échéant)
-        echo $this->render('account/login', [
-            'error' => $error,
-            'pageTitle' => 'Connexion - Stock Management'
-        ]);
     }
-
     /**
      * Gère la déconnexion de l'utilisateur.
      */
@@ -106,7 +111,7 @@ class UserController extends Controller {
         session_destroy();
 
         // Rediriger vers la page de connexion
-        $this->redirect('/login');
+        $this->redirect('login');
     }
 
     /**

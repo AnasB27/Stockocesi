@@ -64,9 +64,7 @@ class Database {
      * @param string $sql The SQL query to prepare.
      * @return PDOStatement The prepared statement.
      */
-    public function prepare($sql) {
-        return $this->conn->prepare($sql);
-    }
+    
 
     /**
      * Execute a direct SQL query.
@@ -74,9 +72,7 @@ class Database {
      * @param string $sql The SQL query to execute.
      * @return PDOStatement The result of the query.
      */
-    public function query($sql) {
-        return $this->conn->query($sql);
-    }
+    
 
     /**
      * Get the ID of the last inserted row.

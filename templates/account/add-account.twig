@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ pageTitle }}</title>
+    <link rel="stylesheet" href="/stockocesi/static/css/creer_compte.css">
+    <link rel="stylesheet" href="/stockocesi/static/css/main.css">
+</head>
+<body>
+    {% include 'layout/header.twig' with {'current_page': 'add-account'} %}
+
+    <main>
+        <form action="/stockocesi/admin/add-account" method="post">
+            <h1 class="page-title">Créer un compte</h1>
+            
+            {% if error %}
+                <div class="error-message">{{ error }}</div>
+            {% endif %}
+            
+            {% if success %}
+                <div class="success-message">{{ success }}</div>
+            {% endif %}
+
+            <div>
+                <label for="nom">Nom</label><br>
+                <input type="text" id="nom" name="name" required>
+            </div>
+            
+            <div>
+                <label for="prenom">Prénom</label><br>
+                <input type="text" id="prenom" name="firstname" required>
+            </div>
+            
+            <div>
+                <label for="email">Adresse mail</label><br>
+                <input type="email" id="email" name="email" required>
+            </div>
+            
+            <div>
+                <label for="password">Mot de passe</label><br>
+                <input type="password" id="password" name="password" required>
+            </div>
+            
+            <div>
+                <label for="store">Magasin</label><br>
+                <select id="store" name="store_id" required>
+                    <option value="" disabled selected>Sélectionner un magasin</option>
+                    {% for store in stores %}
+                        <option value="{{ store.id }}">{{ store.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div>
+                <h3>Rôle:</h3>
+            </div>
+            
+            <div class="checkbox-group">
+                <input type="radio" id="manager" name="role" value="Manager" required>
+                <label for="manager">Gestionnaire</label><br>
+                
+                <input type="radio" id="employee" name="role" value="Employee" required>
+                <label for="employee">Employé</label>
+            </div>
+            
+            <button type="submit" class="main-button">Créer</button>
+        </form>
+    </main>
+
+    {% include 'layout/footer.twig' %}
+</body>
+</html>

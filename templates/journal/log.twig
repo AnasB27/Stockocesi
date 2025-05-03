@@ -4,36 +4,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ pageTitle }}</title>
-    <link rel="stylesheet" href="/static/css/gestion.css">
-    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="stylesheet" href="/stockocesi/static/css/gestion.css">
+    <link rel="stylesheet" href="/stockocesi/static/css/main.css">
 </head>
 <body>
-    {% include 'layout/header.twig' %}
+    {% include 'layout/header.twig' with {'current_page': 'log'} %}
 
     <main>
         <h1>Journal d'activité</h1>
-        <div class="button-clear">
-            <button class="button-clear">Effacer l'historique</button>
+        <div class="log-container">
+            <form method="POST" action="/stockocesi/admin/clear-logs" class="clear-form" id="clearLogsForm">
+                <button type="button" class="button-clear" onclick="confirmClearLogs()">Effacer l'historique</button>
+            </form>
+
+            <div class="log-list">
+                {% if logs is empty %}
+                    <p class="no-logs">Aucune activité enregistrée.</p>
+                {% else %}
+                    <table class="log-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Utilisateur</th>
+                                <th>Action</th>
+                                <th>Détails</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for log in logs %}
+                                <tr>
+                                    <td>{{ log.timestamp|date('d/m/Y H:i:s') }}</td>
+                                    <td>{{ log.user_name }}</td>
+                                    <td>{{ log.action }}</td>
+                                    <td>{{ log.details }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </div>
         </div>
-        <ul>
-            {% for task in tasks %}
-                <li>
-                    {{ task.task }} - Statut : {{ task.status }}
-                    <form method="POST" action="/check-task" style="display:inline;">
-                        <input type="hidden" name="id" value="{{ task.id }}">
-                        <button type="submit">Terminer</button>
-                    </form>
-                    <form method="POST" action="/delete-task" style="display:inline;">
-                        <input type="hidden" name="id" value="{{ task.id }}">
-                        <button type="submit">Supprimer</button>
-                    </form>
-                </li>
-            {% else %}
-                <li>Aucune tâche trouvée.</li>
-            {% endfor %}
-        </ul>
     </main>
 
     {% include 'layout/footer.twig' %}
+    <script src="/stockocesi/static/js/clear-log.js"></script>
 </body>
 </html>

@@ -3,14 +3,17 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 20px;
+    margin: 20px auto;
+    max-width: 1200px;
+    padding: 0 20px;
 }
 
 .search-input {
     width: 80%;
-    padding: 10px;
+    padding: 12px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    font-size: 16px;
 }
 
 .filter-button img {
@@ -21,36 +24,43 @@
 
 /* Liste des stocks */
 .stock-list {
-    margin: 20px;
+    margin: 20px auto;
+    max-width: 1200px;
+    padding: 0 20px;
 }
 
 .stock-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #e7311d;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 5px;
-    margin-bottom: 10px;
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-.stock-item span {
+.product-info {
+    display: flex;
+    flex-grow: 1;
+    gap: 20px;
+}
+
+.product-info span {
     flex: 1;
-    margin-right: 10px;
 }
 
-.delete-button img {
-    width: 24px;
-    height: 24px;
-    cursor: pointer;
+.product-actions {
+    display: flex;
+    gap: 10px;
 }
 
 /* Conteneur pour le bouton d'ajout de produit */
 .add-product-container {
     display: flex;
     justify-content: center;
-    margin: 20px 0;
+    margin: 30px 0;
 }
 
 /* Bouton d'ajout de produit */
@@ -69,44 +79,238 @@
     background-color: #c6281a;
 }
 
+/* Style du Modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    overflow: auto;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 40px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.close {
+    position: absolute;
+    right: 20px;
+    top: 15px;
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.close:hover {
+    color: #e7311d;
+}
+
+.modal h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #333;
+    font-size: 1.8rem;
+}
+
+.form-group {
+    margin-bottom: 25px;
+    text-align: left;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 10px;
+    color: #333;
+    font-weight: 500;
+    font-size: 16px;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #e7311d;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(231, 49, 29, 0.1);
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 35px;
+}
+
+.btn-primary,
+.btn-secondary {
+    padding: 12px 25px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background-color: #e7311d;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #c6281a;
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+    transform: translateY(-1px);
+}
+
+/* Style pour les messages d'erreur */
+.error-message {
+    color: #e7311d;
+    font-size: 14px;
+    margin-top: 8px;
+    display: none;
+}
+
+/* Style pour les champs invalides */
+.form-group input.invalid,
+.form-group select.invalid {
+    border-color: #e7311d;
+    background-color: #fff8f8;
+}
+
+/* Style pour les notifications */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 25px;
+    border-radius: 8px;
+    color: white;
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: all 0.3s ease;
+    z-index: 2000;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.notification.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.notification.success {
+    background-color: #28a745;
+}
+
+.notification.error {
+    background-color: #e7311d;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-content {
+    animation: fadeIn 0.3s ease;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .search-bar {
         flex-direction: column;
-        gap: 10px;
+        gap: 15px;
     }
 
     .search-input {
         width: 100%;
     }
 
-    .filter-button img {
-        width: 20px;
-        height: 20px;
-    }
-
     .stock-item {
         flex-direction: column;
-        align-items: flex-start;
-        padding: 15px;
+        gap: 15px;
     }
 
-    .delete-button img {
-        align-self: flex-end;
+    .product-info {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .product-actions {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .modal-content {
+        margin: 10% auto;
+        padding: 30px 20px;
     }
 }
 
 @media (max-width: 480px) {
     .search-bar {
-        margin: 10px;
+        margin: 15px;
     }
 
-    .stock-item {
-        padding: 10px;
+    .stock-list {
+        margin: 15px;
     }
 
-    .delete-button img {
-        width: 20px;
-        height: 20px;
+    .modal-content {
+        padding: 20px 15px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .modal-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        width: 100%;
     }
 }

@@ -19,6 +19,13 @@ class TaskController extends Controller {
             'pageTitle' => 'Accueil - Gestion des stocks'
         ]);
     }
+/**  */
+    public function accueilPage() {
+        echo $this->render('accueil/accueil', [
+            'pageTitle' => 'Accueil - Gestion des stocks',
+            'current_page' => 'accueil'
+        ]);
+    }
     
     /**
      * Affiche le journal d'action avec la liste des tâches.
