@@ -1,20 +1,19 @@
--- Active: 1738234474941@@127.0.0.1@3306@stock_management
 -- Create the database
 CREATE DATABASE IF NOT EXISTS stock_management CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE stock_management;
 
--- Users table (Fx1)
+-- Store table
 CREATE TABLE IF NOT EXISTS store (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    email VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL, 
     identifier VARCHAR(50) NOT NULL UNIQUE,
     product_type VARCHAR(100) NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Users table (Fx1)
+-- Users table
 CREATE TABLE IF NOT EXISTS user (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -27,8 +26,7 @@ CREATE TABLE IF NOT EXISTS user (
     FOREIGN KEY (store_id) REFERENCES store(id) ON DELETE SET NULL
 );
 
-
--- Action logs table (Fx15)
+-- Action logs table 
 CREATE TABLE IF NOT EXISTS log (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
@@ -39,26 +37,25 @@ CREATE TABLE IF NOT EXISTS log (
     FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE SET NULL
 );
 
--- Categories table (Fx4)
--- Création de la table categories si elle n'existe pas
+-- Categories table
 CREATE TABLE IF NOT EXISTS category (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL UNIQUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Insertion des catégories par défaut
+-- Insert default categories
 INSERT INTO category (name) VALUES 
 ('Alimentaire'),
 ('Boissons'),
-('Produits d\'entretien'),
+('Produits d\'entretien'), 
 ('Fournitures de bureau'),
 ('Électronique'),
 ('Hygiène'),
 ('Autres')
 ON DUPLICATE KEY UPDATE name = VALUES(name);
 
--- Suppliers table (Fx9)
+-- Suppliers table
 CREATE TABLE IF NOT EXISTS supplier (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -67,7 +64,12 @@ CREATE TABLE IF NOT EXISTS supplier (
     phone VARCHAR(20)
 );
 
--- Products table (Fx3)
+-- Insert default supplier
+INSERT INTO supplier (name, contact, phone) 
+VALUES ('Fournisseur par défaut', 'Contact par défaut', '0000000000')
+ON DUPLICATE KEY UPDATE name = name;
+
+-- Products table
 CREATE TABLE IF NOT EXISTS product (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -81,7 +83,8 @@ CREATE TABLE IF NOT EXISTS product (
     FOREIGN KEY (supplier_id) REFERENCES supplier(id) ON DELETE RESTRICT
 );
 
--- Stock entries table (Fx5)
+-- Stocks table  
+-- Modifiez la définition de la table stocks
 CREATE TABLE IF NOT EXISTS stocks (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -94,10 +97,10 @@ CREATE TABLE IF NOT EXISTS stocks (
     date_ajout DATETIME DEFAULT CURRENT_TIMESTAMP,
     date_modification DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (category_id) REFERENCES category(id) ON DELETE SET NULL,
-    FOREIGN KEY (entreprise_id) REFERENCES store(id)
+    FOREIGN KEY (entreprise_id) REFERENCES store(id) ON DELETE CASCADE
 );
 
--- Replenishment orders table (Fx11)
+-- Stock movements table
 CREATE TABLE IF NOT EXISTS stock_movements (
     id INT AUTO_INCREMENT PRIMARY KEY,
     stock_id INT NOT NULL,
@@ -110,26 +113,50 @@ CREATE TABLE IF NOT EXISTS stock_movements (
     FOREIGN KEY (user_id) REFERENCES user(id)
 );
 
--- Generated reports table (Fx12)
+-- Reports table
 CREATE TABLE IF NOT EXISTS report (
     id INT AUTO_INCREMENT PRIMARY KEY,
     type ENUM('movements', 'forecasts') NOT NULL,
     start_period DATE NOT NULL,
     end_period DATE NOT NULL,
-    content JSON NOT NULL, -- Structured data storage
+    content JSON NOT NULL,
     generation_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     generator_id INT NOT NULL,
     FOREIGN KEY (generator_id) REFERENCES user(id) ON DELETE CASCADE
 );
 
--- Insert default admin account (make sure to hash the password in production)
+-- Insert default store
 INSERT INTO store (name, email, identifier, product_type) 
-VALUES ('Siège', 'admin@stockocesi.fr', 'SIEGE001', 'Admin')
+VALUES ('Siège', 'admin@stockocesi.fr', 'SIEGE001', 'Administration')
 ON DUPLICATE KEY UPDATE name = name;
 
-INSERT INTO user (name, email, password, role)
-VALUES ('Anas', 'anas.bazi@viacesi.fr', 'Rewal136?', 'Admin');
+-- Insert default admin user 
+INSERT INTO user (name, firstname, email, password, role)
+VALUES ('Anas', 'Admin', 'anas.bazi@viacesi.fr', 'Rewal136?', 'Admin')
+ON DUPLICATE KEY UPDATE email = email;
 
-INSERT INTO product (name, description, price, quantity, alert_threshold, category_id, supplier_id)
-VALUES ('Produit Test', 'Description du produit test', 10.00, 100, 5, 1, 1)
+-- Insert test product in stocks table
+INSERT INTO stocks (
+    name, 
+    description,
+    quantite,
+    prix,
+    seuil_alerte,
+    category_id,
+    entreprise_id
+) VALUES (
+    'Produit Test',
+    'Description du produit test',
+    100,
+    10.00,
+    5,
+    1,
+    (SELECT id FROM store WHERE identifier = 'SIEGE001')
+)
+ON DUPLICATE KEY UPDATE name = name;
 
+SELECT s.*, c.name as category_name 
+FROM stocks s 
+LEFT JOIN category c ON s.category_id = c.id 
+LEFT JOIN store st ON s.entreprise_id = st.id
+WHERE st.identifier = 'SIEGE001';

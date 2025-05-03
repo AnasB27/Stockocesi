@@ -71,20 +71,24 @@ class StockModel {
      */
     public function getStocksByEntreprise(int $entrepriseId): array {
         try {
+            error_log("Recherche des stocks pour entreprise_id: " . $entrepriseId);
+            
             $sql = "SELECT s.*, c.name as category_name 
                     FROM stocks s 
                     LEFT JOIN category c ON s.category_id = c.id 
-                    WHERE s.entreprise_id = ? 
-                    ORDER BY s.date_ajout DESC";
+                    WHERE s.entreprise_id = ?";
+            
             $stmt = $this->db->prepare($sql);
             $stmt->execute([$entrepriseId]);
-            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            $results = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            
+            error_log("Résultats trouvés: " . print_r($results, true));
+            return $results;
         } catch (\PDOException $e) {
             error_log("Erreur lors de la récupération des stocks: " . $e->getMessage());
             return [];
         }
     }
-
     /**
      * Récupère les articles en stock faible
      * @throws \PDOException si la requête échoue

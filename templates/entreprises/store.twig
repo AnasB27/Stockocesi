@@ -114,11 +114,14 @@
 
     {% include 'layout/footer.twig' %}
     
-    <!-- Debug information -->
     {% if debug %}
-    <script>
-        console.log('Categories:', {{ categories|json_encode|raw }});
-    </script>
+        <div style="display:none">
+            Debug info:
+            <pre>
+                Session: {{ session|json_encode(constant('JSON_PRETTY_PRINT')) }}
+                Products: {{ products|json_encode(constant('JSON_PRETTY_PRINT')) }}
+            </pre>
+        </div>
     {% endif %}
     
     <script src="/stockocesi/static/js/stock.js"></script>
