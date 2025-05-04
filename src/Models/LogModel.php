@@ -46,7 +46,16 @@ class LogModel {
      * @return bool True si la suppression a réussi, false sinon
      */
     public function clearLogs() {
-        $sql = "TRUNCATE TABLE log";
-        return $this->db->exec($sql);
+        try {
+            $this->db->beginTransaction();
+            $sql = "DELETE FROM log";
+            $result = $this->db->exec($sql);
+            $this->db->commit();
+            return true;
+        } catch (\PDOException $e) {
+            $this->db->rollBack();
+            error_log("Erreur lors de la suppression des logs : " . $e->getMessage());
+            return false;
+        }
     }
 }

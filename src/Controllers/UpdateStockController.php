@@ -26,8 +26,12 @@ class UpdateStockController extends Controller {
 
         try {
             $data = $this->validateUpdateData($_POST);
-            
-            if ($this->stockModel->updateStock($data['stock_id'], $data['quantity'], $data['price'])) {
+
+            // Correction : on passe un tableau associatif en second argument
+            if ($this->stockModel->updateStock($data['stock_id'], [
+                'quantity' => $data['quantity'],
+                'price' => $data['price']
+            ])) {
                 $this->logModel->addLog([
                     'user_id' => $_SESSION['user_id'],
                     'user_name' => $_SESSION['user_name'],
@@ -36,6 +40,8 @@ class UpdateStockController extends Controller {
                     'timestamp' => date('Y-m-d H:i:s')
                 ]);
                 $this->sendJsonResponse(true, "Stock mis à jour avec succès");
+            } else {
+                $this->sendJsonResponse(false, "Erreur lors de la mise à jour du stock");
             }
         } catch (StockException $e) {
             $this->sendJsonResponse(false, $e->getMessage());
@@ -70,7 +76,7 @@ class UpdateStockController extends Controller {
             'success' => $success,
             'message' => $message
         ], $data);
-        
+
         header('Content-Type: application/json');
         echo json_encode($response);
         exit;

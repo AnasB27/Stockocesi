@@ -1,7 +1,13 @@
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
 main {
     padding: 20px;
     padding-bottom: 150px; /* Ajoute de l'espace pour éviter que le footer cache le contenu */
     box-sizing: border-box;
+    
 }
 /* Global styles */
 body {
@@ -11,6 +17,9 @@ body {
     background-color: #f9f9f9;
     color: #333;
     line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Assure que le footer reste en bas de la page */
 }
 /* Style général pour le header */
 header {
@@ -36,10 +45,23 @@ header {
     box-sizing: border-box;
 }
 
-/* Le main prend tout l'espace disponible entre le header et le footer */
+.filter-button {
+    background-color: #a19d8d;
+    color: #2c3e50;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: opacity 0.2s ease;
+}
 
+.filter-button:hover {
+    opacity: 0.8;
+}
 
 footer {
+    margin-top:auto;
     background-color: #f0f0f0;
     padding-bottom: 20px;
     padding-top: 10px;

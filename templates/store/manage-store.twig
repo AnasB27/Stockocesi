@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ pageTitle }}</title>
+    <link rel="stylesheet" href="/stockocesi/static/css/main.css">
+    <link rel="stylesheet" href="/stockocesi/static/css/gerer_compte.css">
+</head>
+<body>
+    {% include 'layout/header.twig' with {'current_page': 'manage-stores'} %}
+
+    <main>
+        <h1>Gestion des magasins</h1>
+        
+        {% if error_message %}
+            <div class="alert alert-danger">{{ error_message }}</div>
+        {% endif %}
+        
+        {% if success_message %}
+            <div class="alert alert-success">{{ success_message }}</div>
+        {% endif %}
+        
+        <div class="search-container">
+            <input type="text" id="searchInput" class="search-input" placeholder="Rechercher un magasin...">
+            <button id="filterButton" class="filter-button">
+                Filtrer
+            </button>
+        </div>
+        
+        <div class="account-list">
+            {% if stores is empty %}
+                <p class="no-accounts">Aucun magasin trouvé.</p>
+            {% else %}
+                {% for store in stores %}
+                    <div class="account-item" data-id="{{ store.id }}">
+                        <div class="account-info">
+                            <span class="account-name"><strong>{{ store.name }}</strong></span>
+                            <span class="account-role">{{ store.product_type }}</span>
+                            <span class="account-store">{{ store.identifier }}</span>
+                        </div>
+                        <div class="account-actions">
+                            <button class="edit-button" onclick="window.location.href='/stockocesi/admin/edit-store/{{ store.id }}'">
+                                Modifier
+                            </button>
+                            <button class="delete-button" onclick="deleteStore({{ store.id }})">
+                                Supprimer
+                            </button>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="add-account-button">
+            <a href="/stockocesi/admin/add-store" class="button-primary">Ajouter un magasin</a>
+        </div>
+    </main>
+
+    {% include 'layout/footer.twig' %}
+
+    <script src="/stockocesi/static/js/manage-stores.js"></script>
+</body>
+</html>
