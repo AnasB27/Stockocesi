@@ -87,7 +87,7 @@ Si la session n’est pas initialisée correctement (par exemple, si l’utilisa
    - Créez une base MySQL nommée `stock_management`.
    - Importez le fichier SQL fourni :
      ```bash
-     mysql -u username -p stockocesi < database/stock_management.sql
+     mysql -u username -p stockocesi < bdd/database.sql
      ```
 3. **Configurer l’environnement** :
    - Renseignez les accès BDD dans le fichier `.env` à la racine du projet.
