@@ -100,7 +100,41 @@ INSERT IGNORE INTO store (name, email, identifier, product_type) VALUES
 ('Boutique Mode', 'mode@stockocesi.fr', 'MODE001', 'Vêtement'),
 ('TechStore', 'tech@stockocesi.fr', 'TECH001', 'Électronique');
 
+-- Insertion des catégories
+-- Sous-catégories Textile
+INSERT IGNORE INTO subcategory (name, main_category) VALUES
+('T-shirts', 'Textile'),
+('Pantalons', 'Textile'),
+('Robes', 'Textile'),
+('Manteaux', 'Textile'),
+('Chaussettes', 'Textile'),
+('Ceintures', 'Textile'),
+('Chaussures', 'Textile'),
+('Accessoires', 'Textile');
 
+-- Sous-catégories Tech
+INSERT IGNORE INTO subcategory (name, main_category) VALUES
+('Smartphones', 'Tech'),
+('Tablettes', 'Tech'),
+('PC Portables', 'Tech'),
+('Ordinateurs de bureau', 'Tech'),
+('Écrans', 'Tech'),
+('TV/Audio', 'Tech'),
+('Casques', 'Tech'),
+('Câbles', 'Tech'),
+('Accessoires', 'Tech'),
+('Gaming', 'Tech');
+
+-- Sous-catégories Alimentaire
+INSERT IGNORE INTO subcategory (name, main_category) VALUES
+('Fruits', 'Alimentaire'),
+('Légumes', 'Alimentaire'),
+('Fromages', 'Alimentaire'),
+('Yaourts', 'Alimentaire'),
+('Boissons', 'Alimentaire'),
+('Eaux', 'Alimentaire'),
+('Épicerie', 'Alimentaire'),
+('Snacks', 'Alimentaire');
 
 -- Insertion de l'admin par défaut
 INSERT IGNORE INTO user (name, firstname, email, password, role, store_id)
