@@ -81,13 +81,13 @@ Si la session n’est pas initialisée correctement (par exemple, si l’utilisa
 
 1. **Cloner le dépôt** :
    ```bash
-   git clone https://github.com/votre-username/stockocesi.git
+   git clone https://github.com/AnasB27/Web_Rattrapage.git
    ```
 2. **Importer la base de données** :
-   - Créez une base MySQL nommée `stockocesi`.
+   - Créez une base MySQL nommée `stock_management`.
    - Importez le fichier SQL fourni :
      ```bash
-     mysql -u username -p stockocesi < database/stockocesi.sql
+     mysql -u username -p stockocesi < database/stock_management.sql
      ```
 3. **Configurer l’environnement** :
    - Renseignez les accès BDD dans le fichier `.env` à la racine du projet.
