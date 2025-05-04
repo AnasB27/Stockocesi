@@ -138,7 +138,7 @@ INSERT IGNORE INTO subcategory (name, main_category) VALUES
 
 -- Insertion de l'admin par défaut
 INSERT IGNORE INTO user (name, firstname, email, password, role, store_id)
-SELECT 'Admin', 'Admin', 'anas.bazi@viacesi.fr', 'Rewal136?', 'Admin', id
+SELECT 'Admin', 'Admin', 'admin@viacesi.fr', 'Admin123!', 'Admin', id
 FROM store 
 WHERE identifier = 'SIEGE001';
 
