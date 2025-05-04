@@ -5,30 +5,26 @@ use PDO;
 use PDOException;
 use Dotenv\Dotenv;
 
-/**
- * Singleton class for managing database connections.
- */
+
 class Database {
     private static $instance = null;
     private $conn;
 
-    /**
-     * Private constructor to prevent direct instantiation.
-     */
+
     private function __construct() {
-        // Load environment variables
-        $rootPath = dirname(dirname(dirname(__FILE__))); // Adjust path to project root
+
+        $rootPath = dirname(dirname(dirname(__FILE__))); 
         $dotenv = Dotenv::createImmutable($rootPath);
         $dotenv->safeLoad();
 
-        // Database configuration
+        // configuration base de données
         $servername = $_ENV['DB_HOST'] ?? 'localhost';
         $username = $_ENV['DB_USER'] ?? 'root';
         $password = $_ENV['DB_PASS'] ?? '';
-        $dbname = $_ENV['DB_NAME'] ?? 'stockocesi';
+        $dbname = $_ENV['DB_NAME'] ?? 'stock_management';
 
         try {
-            // Create a new PDO connection
+            // connection PDO
             $this->conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
@@ -38,9 +34,8 @@ class Database {
     }
 
     /**
-     * Get the singleton instance of the Database class.
      *
-     * @return Database The singleton instance.
+     * @return Database singleton instance.
      */
     public static function getInstance() {
         if (self::$instance === null) {
@@ -50,9 +45,8 @@ class Database {
     }
 
     /**
-     * Get the PDO connection.
      *
-     * @return PDO The PDO connection.
+     * @return PDO 
      */
     public function getConnection() {
         return $this->conn;

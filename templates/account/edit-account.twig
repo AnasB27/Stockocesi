@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ pageTitle }}</title>
+    <link rel="stylesheet" href="/stockocesi/static/css/main.css">
+    <link rel="stylesheet" href="/stockocesi/static/css/gerer_compte.css">
+</head>
+<body>
+    {% include 'layout/header.twig' with {'current_page': 'edit-account'} %}
+
+    <main>
+        <h1>Modifier un compte</h1>
+        
+        <form method="POST" class="edit-form">
+            <div class="form-group">
+                <label for="name">Nom</label>
+                <input type="text" id="name" name="name" value="{{ account.name }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="firstname">Prénom</label>
+                <input type="text" id="firstname" name="firstname" value="{{ account.firstname }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" value="{{ account.email }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="role">Rôle</label>
+                <select id="role" name="role" required>
+                    <option value="Employee" {% if account.role == 'Employee' %}selected{% endif %}>Employé</option>
+                    <option value="Manager" {% if account.role == 'Manager' %}selected{% endif %}>Gestionnaire</option>
+                    {% if is_super_admin %}
+                        <option value="Admin" {% if account.role == 'Admin' %}selected{% endif %}>Administrateur</option>
+                    {% endif %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="store_id">Magasin</label>
+                <select id="store_id" name="store_id">
+                    <option value="">Aucun magasin</option>
+                    {% for store in stores %}
+                        <option value="{{ store.id }}" {% if account.store_id == store.id %}selected{% endif %}>
+                            {{ store.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Nouveau mot de passe (laisser vide pour ne pas modifier)</label>
+                <input type="password" id="password" name="password">
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="button-primary">Enregistrer</button>
+                <a href="/stockocesi/admin/manage-accounts" class="button-secondary">Annuler</a>
+            </div>
+        </form>
+    </main>
+
+    {% include 'layout/footer.twig' %}
+</body>
+</html>

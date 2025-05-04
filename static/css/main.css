@@ -1,7 +1,13 @@
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
 main {
     padding: 20px;
     padding-bottom: 150px; /* Ajoute de l'espace pour éviter que le footer cache le contenu */
     box-sizing: border-box;
+    
 }
 /* Global styles */
 body {
@@ -11,6 +17,9 @@ body {
     background-color: #f9f9f9;
     color: #333;
     line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Assure que le footer reste en bas de la page */
 }
 /* Style général pour le header */
 header {
@@ -36,10 +45,23 @@ header {
     box-sizing: border-box;
 }
 
-/* Le main prend tout l'espace disponible entre le header et le footer */
+.filter-button {
+    background-color: #a19d8d;
+    color: #2c3e50;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: opacity 0.2s ease;
+}
 
+.filter-button:hover {
+    opacity: 0.8;
+}
 
 footer {
+    margin-top:auto;
     background-color: #f0f0f0;
     padding-bottom: 20px;
     padding-top: 10px;
@@ -51,12 +73,12 @@ footer {
     align-items: center;
     box-sizing: border-box;
     font-size: 0.8em;
-    flex-wrap: wrap; /* Permet au contenu de s'adapter sur petits écrans */
+    flex-wrap: wrap; 
     bottom: 0;
 }
 
 .contact-link {
-    color: #e7311d; /* Met le lien "Nous contacter" en rouge */
+    color: #e7311d; 
     text-decoration: none;
     font-weight: bold;
     padding-right: 10px;
@@ -66,7 +88,7 @@ footer {
     display: flex;
     align-items: center;
     border-radius: 30%;
-    overflow: hidden; /* Cache les débordements */
+    overflow: hidden; 
     cursor: pointer;
 }
 
@@ -75,9 +97,9 @@ footer {
 }
 
 .logo {
-    max-height: 100px; /* Hauteur maximale du logo */
-    width: auto; /* Garde le ratio d'aspect */
-    object-fit: contain; /* Assure que l'image s'adapte sans déformation */
+    max-height: 100px; 
+    width: auto; 
+    object-fit: contain; 
 }
 .burger-menu {
     position: relative;
@@ -156,7 +178,7 @@ footer {
     padding-left: 25px;
 }
 
-/* Ajout du bouton de fermeture dans le menu */
+
 .nav-menu::before {
     content: '✕';
     position: absolute;
@@ -167,8 +189,7 @@ footer {
     cursor: pointer;
 }
 
-/* Media queries existantes... */
-/* Ajout du bouton de fermeture dans le menu */
+
 .nav-menu::before {
     content: '✕';
     position: absolute;
@@ -179,9 +200,7 @@ footer {
     cursor: pointer;
     padding: 10px;
 }
-/* Responsive */
 
-/* Responsiveness pour petits écrans */
 @media (max-width: 768px) { 
     .header-container {
         flex-direction: column;
@@ -190,7 +209,7 @@ footer {
 
     .header-button {
         margin-bottom: 10px;
-        width: 90%; /* Boutons plus larges sur petits écrans */
+        width: 90%; 
     }
 
     footer {
@@ -204,7 +223,7 @@ footer {
     }
 }
 
-/* Responsiveness pour très petits écrans */
+
 @media (max-width: 480px) {
     h1 {
         font-size: 22px;
@@ -239,7 +258,7 @@ footer {
 }
 @media (max-width: 480px) {
     .nav-menu {
-        width: 100%; /* Pleine largeur sur très petits écrans */
+        width: 100%; 
         max-width: none;
     }
 
@@ -251,6 +270,6 @@ footer {
 
 @media (max-width: 768px) {
     .logo {
-        max-height: 100px; /* Logo légèrement plus petit sur mobile */
+        max-height: 100px; 
     }
 }

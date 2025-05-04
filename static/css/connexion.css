@@ -6,20 +6,20 @@ html, body {
 
 body {
     display: flex;
-    flex-direction: column; /* Permet de centrer le contenu verticalement */
+    flex-direction: column; 
     margin: 0;
     font-family: Arial, sans-serif;
     text-align: center;
-    background-color: #f9f9f9; /* Couleur de fond spécifique à la page de connexion */
+    background-color: #f9f9f9; /
 }
 
 main {
-    margin: auto; /* Centre verticalement et horizontalement */
-    max-width: 500px; /* Largeur ajustée pour ressembler à l'image */
-    background-color: white; /* Fond blanc pour le formulaire */
-    padding: 30px; /* Augmente l'espace intérieur */
+    margin: auto; 
+    max-width: 500px; 
+    background-color: white; 
+    padding: 30px; 
     border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Ajoute une ombre pour un effet de carte */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
 }
 
 h1 {
@@ -30,7 +30,7 @@ h1 {
 
 form div {
     margin-bottom: 15px;
-    text-align: left; /* Aligne les labels à gauche */
+    text-align: left; 
 }
 
 label {
@@ -60,6 +60,6 @@ input:focus {
     border-radius: 10px;
     font-size: 1.2em;
     cursor: pointer;
-    width: 100%; /* Bouton prend toute la largeur */
+    width: 100%; 
 }
 

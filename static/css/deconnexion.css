@@ -10,8 +10,6 @@ body {
     min-height: 100vh;
 }
 
-
-/* Main content */
 main {
     flex: 1;
     display: flex;

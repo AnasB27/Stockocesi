@@ -8,7 +8,7 @@ body {
 
 main h1 {
     font-size: 2em;
-    color: #e7311d; /* Met le titre "Nous contacter !" en rouge */
+    color: #e7311d; 
     margin-bottom: 20px;
 }
 main {

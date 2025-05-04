@@ -59,7 +59,7 @@ class TaskController extends Controller {
     public function checkTask() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
             $taskId = (int) $_POST['id'];
-            $this->model->checkTask($taskId); // Marque la tâche comme terminée
+            $this->model->checkTask($taskId); // Tâche terminée
             header('Location: /log'); // Redirige vers le journal d'action
             exit;
         } else {
@@ -101,9 +101,15 @@ class TaskController extends Controller {
     /**
      * Affiche la page "À propos".
      */
-    public function aboutPage() {
-        echo $this->templateEngine->render('about/about.twig', [
-            'pageTitle' => 'À propos'
+    public function contactPage() {
+        echo $this->render('static/contact', [
+            'pageTitle' => 'Contact - Stock O\' CESI'
+        ]);
+    }
+    
+    public function mentionsPage() {
+        echo $this->render('static/mentions', [
+            'pageTitle' => 'Mentions légales - Stock O\' CESI'
         ]);
     }
 }

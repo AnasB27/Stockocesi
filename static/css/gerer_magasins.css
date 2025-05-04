@@ -1,4 +1,4 @@
-/* Barre de recherche */
+
 .search-bar {
     display: flex;
     justify-content: space-between;
@@ -22,7 +22,7 @@
     border-radius: 50%;
 }
 
-/* Liste des magasins */
+
 .store-list {
     margin: 20px;
 }
@@ -44,7 +44,6 @@
     cursor: pointer;
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
     .search-bar {
         flex-direction: column;

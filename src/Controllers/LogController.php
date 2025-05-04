@@ -31,19 +31,40 @@ class LogController extends Controller {
      * Efface tout l'historique des logs
      */
     public function clearLogs() {
-        $this->ensureAdmin();
-        
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            if ($this->logModel->clearLogs()) {
-                // Log l'action d'effacement
-                $this->logAction('CLEAR_LOGS', 'Effacement de l\'historique des logs');
-                $_SESSION['success_message'] = "L'historique a été effacé avec succès.";
-            } else {
-                $_SESSION['error_message'] = "Une erreur est survenue lors de l'effacement de l'historique.";
-            }
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
         }
-        
-        $this->redirect('admin/log');
+    
+        header('Content-Type: application/json');
+    
+        // Vérification admin avant tout
+        if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'Admin') {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Accès refusé'
+            ]);
+            exit;
+        }
+    
+        try {
+            if ($this->logModel->clearLogs()) {
+                echo json_encode([
+                    'success' => true,
+                    'message' => "L'historique a été effacé avec succès."
+                ]);
+            } else {
+                echo json_encode([
+                    'success' => false,
+                    'message' => "Une erreur est survenue lors de l'effacement de l'historique."
+                ]);
+            }
+        } catch (\Exception $e) {
+            echo json_encode([
+                'success' => false,
+                'message' => "Erreur: " . $e->getMessage()
+            ]);
+        }
+        exit;
     }
 
     /**
@@ -53,9 +74,19 @@ class LogController extends Controller {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-
+    
         if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'Admin') {
-            $this->redirect('login');
+            // Si c'est une requête AJAX (JSON)
+            if (
+                isset($_SERVER['HTTP_ACCEPT']) &&
+                strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false
+            ) {
+                header('Content-Type: application/json');
+                echo json_encode(['success' => false, 'message' => 'Accès refusé']);
+                exit;
+            } else {
+                $this->redirect('login');
+            }
         }
     }
 
@@ -77,4 +108,5 @@ class LogController extends Controller {
             'timestamp' => date('Y-m-d H:i:s')
         ]);
     }
+    
 }

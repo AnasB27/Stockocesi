@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ pageTitle }}</title>
+    <link rel="stylesheet" href="/stockocesi/static/css/main.css">
+    <link rel="stylesheet" href="/stockocesi/static/css/stock.css">
+</head>
+<body data-role="{{ session.user_role }}" data-store-type="{{ store.product_type }}">
+    {% include 'layout/header.twig' %}
+
+    <main class="container">
+        <div class="search-filter-container">
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Rechercher un produit" class="search-input">
+            </div>
+        </div>
+
+        {% if session.user_role in ['Admin', 'Manager'] %}
+            <div class="page-content">
+                <a href="/stockocesi/stock/add-stock" class="add-product-button">
+                    <i class="fas fa-plus"></i> Ajouter un produit
+                </a>
+                <a href="javascript:void(0);" class="history-button" onclick="showStockHistoryGeneral()">
+                    <i class="fas fa-history"></i> Historique général
+                </a>
+                {% if lowStockProducts is not empty %}
+                    <div class="stock-alerts">
+                        <div class="alert warning">
+                            Produits en stock faible : {{ lowStockProducts|length }}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        <div class="stock-container">
+            {% if products is empty %}
+                <p class="no-products">Aucun produit en stock.</p>
+            {% else %}
+                <table class="stock-table">
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Description</th>
+                            <th>Catégorie</th>
+                            <th>Sous-catégorie</th>
+                            <th>Quantité</th>
+                            <th>Prix</th>
+                            <th>Seuil d'alerte</th>
+                            {% if session.user_role in ['Admin', 'Manager'] %}
+                                <th>Actions</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in products %}
+                            <tr class="stock-item"
+                                data-id="{{ product.id }}"
+                                data-category="{{ product.category_id }}"
+                                data-subcategory="{{ product.subcategory_id }}">
+                                <td data-label="Nom">{{ product.name }}</td>
+                                <td data-label="Description">{{ product.description }}</td>
+                                <td data-label="Catégorie">{{ product.category_name }}</td>
+                                <td data-label="Sous-catégorie">{{ product.subcategory_name }}</td>
+                                <td data-label="Quantité" class="quantity {% if product.quantite <= product.seuil_alerte %}low-stock{% endif %}">
+                                    {{ product.quantite }}
+                                </td>
+                                <td data-label="Prix">{{ product.prix|number_format(2, ',', ' ') }} €</td>
+                                <td data-label="Seuil d'alerte">{{ product.seuil_alerte }}</td>
+                                {% if session.user_role in ['Admin', 'Manager'] %}
+                                    <td data-label="Actions" class="actions">
+                                        <button class="btn-edit" onclick="editStock({{ product.id }})">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn-delete" onclick="deleteStock({{ product.id }}, {{ product.quantite }})">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+        </div>
+    </main>
+
+    <div class="modal-stock" id="updateStockModal" style="display:none;">
+        <div class="modal-stock-content">
+            <span class="modal-stock-close" onclick="closeUpdateModal()">&times;</span>
+            <h2>Modifier le produit</h2>
+            <form id="updateStockForm">
+                <input type="hidden" name="stock_id" id="update-stock-id">
+                <label>Nom :
+                    <input type="text" name="name" id="update-name" class="form-input" required>
+                </label>
+                <label>Description :
+                    <input type="text" name="description" id="update-description" class="form-input">
+                </label>
+                <label>Catégorie :
+                    <select name="category_id" id="update-category" class="form-input" required>
+                        <option value="">Sélectionner</option>
+                        {% for category in categories %}
+                            <option value="{{ category.id }}">{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <label>Sous-catégorie :
+                    <select name="subcategory_id" id="update-subcategory" class="form-input">
+                        <option value="">Sélectionner</option>
+                        {% for subcategory in subcategories %}
+                            <option value="{{ subcategory.id }}" data-category="{{ subcategory.category_id }}">{{ subcategory.name }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <label>Quantité :
+                    <input type="number" name="quantite" id="update-quantite" class="form-input" min="0" required>
+                </label>
+                <label>Prix (€) :
+                    <input type="number" name="prix" id="update-prix" class="form-input" min="0" step="0.01" required>
+                </label>
+                <label>Seuil d'alerte :
+                    <input type="number" name="seuil_alerte" id="update-seuil-alerte" class="form-input" min="0" required>
+                </label>
+                <button type="submit" class="add-product-button" style="width:100%;margin-top:12px;">Enregistrer</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-stock" id="historyGeneralModal" style="display:none;">
+        <div class="modal-stock-content" style="max-width:800px;">
+            <span class="modal-stock-close" onclick="closeHistoryGeneralModal()">&times;</span>
+            <h2>Historique général du stock</h2>
+            <div id="history-general-content">
+                <div style="text-align:center;">Chargement...</div>
+            </div>
+        </div>
+    </div>
+
+    {% include 'layout/footer.twig' %}
+    <script src="/stockocesi/static/js/stock.js"></script>
+    <script src="/stockocesi/static/js/delete-stock.js"></script>
+    <script src="/stockocesi/static/js/update-stock.js"></script>
+    <script src="/stockocesi/static/js/log-stock.js"></script>
+</body>
+</html>

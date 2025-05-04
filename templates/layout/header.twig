@@ -1,26 +1,29 @@
 <header>
     <div class="header-container">
-        <!-- Logo -->
+
         <div class="logo-container">
             <img src="/stockocesi/static/image/logo.png" alt="Logo de Stock O' CESI" class="logo">
         </div>
 
-        <!-- Slogan -->
-        <h4>Gérez vos stocks tout au long de l'année</h4>
+        <h4>
+            Gérez vos stocks tout au long de l'année
+            {% if store.name is defined %}
+                - {{ store.name }}
+            {% endif %}
+        </h4>
 
-        <!-- Menu burger -->
         <div class="burger-menu">
             <span class="burger-icon"></span>
             <nav class="nav-menu">
                 <ul>
                     {% if session.user_id is not defined %}
-                        <!-- Menu pour utilisateurs non connectés -->
+
                         <li><a href="/stockocesi/accueil">Accueil</a></li>
                         <li><a href="/stockocesi/login">Connexion</a></li>
                     {% else %}
-                        <!-- Menu pour utilisateurs connectés -->
+
                         <li><a href="/stockocesi/accueil">Accueil</a></li>
-                        <li><a href="/stockocesi/store">Magasins partenaires</a></li>
+                        <li><a href="/stockocesi/store">Mon Stock</a></li>
                         
                         {% if session.user_role == 'Admin' %}
                             {% if current_page != 'log' %}

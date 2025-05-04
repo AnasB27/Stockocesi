@@ -15,8 +15,8 @@ body {
 main {
     flex: 1;
     display: flex;
-    justify-content: center; /* Centre horizontalement */
-    align-items: center; /* Centre verticalement */
+    justify-content: center; 
+    align-items: center; 
     padding: 20px;
 }
 
@@ -29,10 +29,10 @@ h1 {
     margin: 20px 0;
 }
 
-/* Form styles */
+
 form {
     max-width: 500px;
-    width: 100%; /* S'adapte aux petits écrans */
+    width: 100%; 
     padding: 20px;
     background-color: white;
     border-radius: 10px;
@@ -46,7 +46,7 @@ form label {
 }
 
 form input, form select, form button {
-    width: 90%; /* Prend toute la largeur disponible */
+    width: 90%; 
     padding: 10px;
     margin-bottom: 20px;
     border: 1px solid #ccc;
@@ -72,10 +72,10 @@ form button:hover, .main-button:hover {
     background-color: #c0392b;
 }
 
-/* Checkbox styles */
+
 .checkbox-group {
     display: flex;
-    flex-direction: row; /* Aligne les cases à cocher horizontalement */
+    flex-direction: row; 
     gap: 20px;
 }
 
@@ -84,13 +84,13 @@ input[type="checkbox"] {
     margin-right: 10px;
 }
 
-/* Error message */
+
 .error-message {
     color: #e74c3c;
     font-size: 0.9em;
     margin-top: 5px;
 }
-/* Responsive Design */
+
 @media (max-width: 768px) {
     form {
         padding: 15px;
@@ -102,17 +102,17 @@ input[type="checkbox"] {
 
     form input, form select, form button {
         font-size: 14px;
-        padding: 8px; /* Réduction de l'espace intérieur */
-        width: 90%; /* Champs prennent toute la largeur */
+        padding: 8px; 
+        width: 90%; 
     }
 
     .main-button {
-        padding: 12px 20px; /* Ajustement de la taille du bouton */
+        padding: 12px 20px; 
     }
 
     .checkbox-group {
         display: flex;
-        flex-direction: row; /* Aligne les cases à cocher horizontalement */
+        flex-direction: row; 
         gap: 20px;
     }
 
@@ -130,27 +130,27 @@ input[type="checkbox"] {
 
     form input, form select, form button {
         font-size: 12px;
-        padding: 6px; /* Réduction supplémentaire de l'espace intérieur */
-        width: 90%; /* Champs prennent toute la largeur */
+        padding: 6px; 
+        width: 90%; 
     }
 
     .checkbox-group {
         display: flex;
-        flex-direction: column; /* Empile les rôles verticalement */
-        align-items: flex-start; /* Aligne les éléments à gauche */
-        gap: 10px; /* Ajoute un espace entre chaque rôle */
-        width: 100%; /* Prend toute la largeur */
+        flex-direction: column;
+        align-items: flex-start; 
+        gap: 10px; 
+        width: 100%; 
         margin-bottom:15px;
     }
 
     .checkbox-group label {
         display: flex;
-        align-items: center; /* Aligne verticalement la case et le texte */
-        gap: 5px; /* Espace entre la case et le texte */
-        width: 100%; /* Prend toute la largeur disponible */
+        align-items: center;
+        gap: 5px; 
+        width: 100%; 
     }
 
     input[type="checkbox"] {
-        margin: 0; /* Supprime les marges inutiles */
+        margin: 0; 
     }
 }

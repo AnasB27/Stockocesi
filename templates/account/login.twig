@@ -8,8 +8,7 @@
     <link rel="stylesheet" href="/stockocesi/static/css/main.css">
 </head>
 <body>
-    {% include 'layout/header.twig' with {'current_page': 'login'} %}
-
+    {% include 'layout/header.twig' %}
     <main>
         <h1>Connexion</h1>
         <form action="/stockocesi/login" method="post">
@@ -27,7 +26,7 @@
                 <div class="error-message">{{ error }}</div>
             {% endif %}
             
-            <button type="submit">Connexion</button>
+            <button type="submit" class="main-button">Connexion</button>
         </form>
     </main>
 

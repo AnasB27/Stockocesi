@@ -1,34 +1,41 @@
--- Active: 1738234474941@@127.0.0.1@3306@stock_management
--- Create the database
+-- Création de la base
 CREATE DATABASE IF NOT EXISTS stock_management CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE stock_management;
 
--- Users table (Fx1)
+-- Suppression des tables si elles existent déjà
+DROP TABLE IF EXISTS stock_movements;
+DROP TABLE IF EXISTS stocks;
+DROP TABLE IF EXISTS subcategory;
+DROP TABLE IF EXISTS category;
+DROP TABLE IF EXISTS log;
+DROP TABLE IF EXISTS user;
+DROP TABLE IF EXISTS store;
+
+-- Table des magasins
 CREATE TABLE IF NOT EXISTS store (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    email VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL, 
     identifier VARCHAR(50) NOT NULL UNIQUE,
     product_type VARCHAR(100) NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Users table (Fx1)
+-- Table des utilisateurs
 CREATE TABLE IF NOT EXISTS user (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    firstname VARCHAR(100) NOT NULL,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
+    name VARCHAR(50) NOT NULL,
+    firstname VARCHAR(50) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(100) NOT NULL,
     store_id INT,
     role ENUM('Admin', 'Manager', 'Employee') NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (store_id) REFERENCES store(id) ON DELETE SET NULL
 );
 
-
--- Action logs table (Fx15)
+-- Table des logs d'action
 CREATE TABLE IF NOT EXISTS log (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
@@ -39,49 +46,24 @@ CREATE TABLE IF NOT EXISTS log (
     FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE SET NULL
 );
 
--- Categories table (Fx4)
--- Création de la table categories si elle n'existe pas
+-- Table des catégories
 CREATE TABLE IF NOT EXISTS category (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL UNIQUE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    name VARCHAR(100) NOT NULL,
+    store_type VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uniq_category_store_type (name, store_type)
 );
 
--- Insertion des catégories par défaut
-INSERT INTO category (name) VALUES 
-('Alimentaire'),
-('Boissons'),
-('Produits d\'entretien'),
-('Fournitures de bureau'),
-('Électronique'),
-('Hygiène'),
-('Autres')
-ON DUPLICATE KEY UPDATE name = VALUES(name);
-
--- Suppliers table (Fx9)
-CREATE TABLE IF NOT EXISTS supplier (
+-- Table des sous-catégories
+CREATE TABLE IF NOT EXISTS subcategory (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    contact VARCHAR(150) NOT NULL,
-    address TEXT,
-    phone VARCHAR(20)
+    main_category INT NOT NULL,
+    UNIQUE KEY uniq_subcat_main (name, main_category)
 );
 
--- Products table (Fx3)
-CREATE TABLE IF NOT EXISTS product (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    description TEXT,
-    price DECIMAL(10,2) NOT NULL CHECK (price >= 0),
-    quantity INT DEFAULT 0 CHECK (quantity >= 0),
-    alert_threshold INT DEFAULT 5 CHECK (alert_threshold >= 0),
-    category_id INT NOT NULL,
-    supplier_id INT NOT NULL,
-    FOREIGN KEY (category_id) REFERENCES category(id) ON DELETE RESTRICT,
-    FOREIGN KEY (supplier_id) REFERENCES supplier(id) ON DELETE RESTRICT
-);
-
--- Stock entries table (Fx5)
+-- Table des stocks
 CREATE TABLE IF NOT EXISTS stocks (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -90,14 +72,16 @@ CREATE TABLE IF NOT EXISTS stocks (
     prix DECIMAL(10,2) NOT NULL,
     seuil_alerte INT DEFAULT 10,
     category_id INT,
+    subcategory_id INT,
     entreprise_id INT NOT NULL,
     date_ajout DATETIME DEFAULT CURRENT_TIMESTAMP,
     date_modification DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (category_id) REFERENCES category(id) ON DELETE SET NULL,
-    FOREIGN KEY (entreprise_id) REFERENCES store(id)
+    FOREIGN KEY (subcategory_id) REFERENCES subcategory(id) ON DELETE SET NULL,
+    FOREIGN KEY (entreprise_id) REFERENCES store(id) ON DELETE CASCADE
 );
 
--- Replenishment orders table (Fx11)
+-- Table des mouvements de stock
 CREATE TABLE IF NOT EXISTS stock_movements (
     id INT AUTO_INCREMENT PRIMARY KEY,
     stock_id INT NOT NULL,
@@ -110,26 +94,114 @@ CREATE TABLE IF NOT EXISTS stock_movements (
     FOREIGN KEY (user_id) REFERENCES user(id)
 );
 
--- Generated reports table (Fx12)
-CREATE TABLE IF NOT EXISTS report (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    type ENUM('movements', 'forecasts') NOT NULL,
-    start_period DATE NOT NULL,
-    end_period DATE NOT NULL,
-    content JSON NOT NULL, -- Structured data storage
-    generation_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    generator_id INT NOT NULL,
-    FOREIGN KEY (generator_id) REFERENCES user(id) ON DELETE CASCADE
-);
+-- Insertion des magasins
+INSERT IGNORE INTO store (name, email, identifier, product_type) VALUES 
+('Siège', 'admin@stockocesi.fr', 'SIEGE001', 'Alimentaire'),
+('Boutique Mode', 'mode@stockocesi.fr', 'MODE001', 'Vêtement'),
+('TechStore', 'tech@stockocesi.fr', 'TECH001', 'Électronique');
 
--- Insert default admin account (make sure to hash the password in production)
-INSERT INTO store (name, email, identifier, product_type) 
-VALUES ('Siège', 'admin@stockocesi.fr', 'SIEGE001', 'Admin')
-ON DUPLICATE KEY UPDATE name = name;
 
-INSERT INTO user (name, email, password, role)
-VALUES ('Anas', 'anas.bazi@viacesi.fr', 'Rewal136?', 'Admin');
 
-INSERT INTO product (name, description, price, quantity, alert_threshold, category_id, supplier_id)
-VALUES ('Produit Test', 'Description du produit test', 10.00, 100, 5, 1, 1)
+-- Insertion de l'admin par défaut
+INSERT IGNORE INTO user (name, firstname, email, password, role, store_id)
+SELECT 'Admin', 'Admin', 'anas.bazi@viacesi.fr', 'Rewal136?', 'Admin', id
+FROM store 
+WHERE identifier = 'SIEGE001';
 
+-- Insertion d'un produit test
+INSERT IGNORE INTO stocks (
+    name, 
+    description,
+    quantite,
+    prix,
+    seuil_alerte,
+    category_id,
+    subcategory_id,
+    entreprise_id
+) 
+SELECT 
+    'Pommes Golden',
+    'Pommes Golden fraîches',
+    100,
+    2.50,
+    20,
+    c.id,
+    s.id,
+    st.id
+FROM category c
+JOIN subcategory s ON s.main_category = c.store_type
+JOIN store st ON st.identifier = 'SIEGE001'
+WHERE c.name = 'Fruits et Légumes' 
+AND c.store_type = 'Alimentaire'
+AND s.name = 'Fruits'
+LIMIT 1;
+
+-- Vérification
+SELECT 'Stores' as 'Table', COUNT(*) as 'Count' FROM store
+UNION ALL
+SELECT 'Categories', COUNT(*) FROM category
+UNION ALL
+SELECT 'Subcategories', COUNT(*) FROM subcategory
+UNION ALL
+SELECT 'Stocks', COUNT(*) FROM stocks;
+
+
+ALTER TABLE subcategory
+ADD CONSTRAINT fk_main_category FOREIGN KEY (main_category) REFERENCES category(id) ON DELETE CASCADE;
+
+SELECT * FROM subcategory;
+
+-- Catégories pour Textile, Tech, Alimentaire
+INSERT IGNORE INTO category (name, store_type) VALUES
+('Textile', 'Textile'),
+('Tech', 'Électronique'),
+('Alimentaire', 'Alimentaire');
+
+-- Sous-catégories Textile
+INSERT INTO subcategory (name, main_category)
+SELECT 'T-shirts', c.id FROM category c WHERE c.name = 'Textile'
+UNION ALL SELECT 'Pantalons', c.id FROM category c WHERE c.name = 'Textile'
+UNION ALL SELECT 'Robes', c.id FROM category c WHERE c.name = 'Textile'
+UNION ALL SELECT 'Manteaux', c.id FROM category c WHERE c.name = 'Textile'
+UNION ALL SELECT 'Chaussettes', c.id FROM category c WHERE c.name = 'Textile'
+UNION ALL SELECT 'Ceintures', c.id FROM category c WHERE c.name = 'Textile'
+UNION ALL SELECT 'Chaussures', c.id FROM category c WHERE c.name = 'Textile'
+UNION ALL SELECT 'Accessoires', c.id FROM category c WHERE c.name = 'Textile';
+
+-- Sous-catégories Tech
+INSERT INTO subcategory (name, main_category)
+SELECT 'Smartphones', c.id FROM category c WHERE c.name = 'Tech'
+UNION ALL SELECT 'Tablettes', c.id FROM category c WHERE c.name = 'Tech'
+UNION ALL SELECT 'PC Portables', c.id FROM category c WHERE c.name = 'Tech'
+UNION ALL SELECT 'Ordinateurs de bureau', c.id FROM category c WHERE c.name = 'Tech'
+UNION ALL SELECT 'Écrans', c.id FROM category c WHERE c.name = 'Tech'
+UNION ALL SELECT 'TV/Audio', c.id FROM category c WHERE c.name = 'Tech'
+UNION ALL SELECT 'Casques', c.id FROM category c WHERE c.name = 'Tech'
+UNION ALL SELECT 'Câbles', c.id FROM category c WHERE c.name = 'Tech'
+UNION ALL SELECT 'Accessoires', c.id FROM category c WHERE c.name = 'Tech'
+UNION ALL SELECT 'Gaming', c.id FROM category c WHERE c.name = 'Tech';
+
+-- Sous-catégories Alimentaire
+INSERT INTO subcategory (name, main_category)
+SELECT 'Fruits', c.id FROM category c WHERE c.name = 'Alimentaire'
+UNION ALL SELECT 'Légumes', c.id FROM category c WHERE c.name = 'Alimentaire'
+UNION ALL SELECT 'Fromages', c.id FROM category c WHERE c.name = 'Alimentaire'
+UNION ALL SELECT 'Yaourts', c.id FROM category c WHERE c.name = 'Alimentaire'
+UNION ALL SELECT 'Boissons', c.id FROM category c WHERE c.name = 'Alimentaire'
+UNION ALL SELECT 'Eaux', c.id FROM category c WHERE c.name = 'Alimentaire'
+UNION ALL SELECT 'Épicerie', c.id FROM category c WHERE c.name = 'Alimentaire'
+UNION ALL SELECT 'Snacks', c.id FROM category c WHERE c.name = 'Alimentaire';
+
+
+-- Catégories pour Textile, Tech, Alimentaire
+INSERT IGNORE INTO category (name, store_type) VALUES
+('Textile', 'Textile'),
+('Tech', 'Électronique'),
+('Alimentaire', 'Alimentaire');
+
+
+
+UPDATE store SET product_type = 'Textile' WHERE product_type = 'Vêtement';
+UPDATE store SET product_type = 'Tech' WHERE product_type = 'Electronique';
+
+select * from stocks;

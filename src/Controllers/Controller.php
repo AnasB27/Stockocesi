@@ -11,10 +11,10 @@ class Controller {
     protected $templateEngine;
 
     public function __construct() {
-        // Initialiser la connexion à la base de données
+        
         $this->db = Database::getInstance()->getConnection();
 
-        // Initialiser le moteur de templates Twig
+        // Twig
         $loader = new FilesystemLoader(__DIR__ . '/../../templates');
         $this->templateEngine = new Environment($loader, [
             'cache' => false,
@@ -25,18 +25,18 @@ class Controller {
     /**
      * Redirige vers une route donnée avec des paramètres optionnels.
      *
-     * @param string $route La route vers laquelle rediriger
-     * @param array $params Paramètres optionnels à ajouter à l'URL
+     * @param string $route 
+     * @param array $params 
      */
     protected function redirect($route, $params = []) {
-        // Utiliser des URLs propres
+        
         $useCleanUrls = true;
         
         if ($useCleanUrls) {
-            // Construire l'URL avec le préfixe de l'application
+          
             $url = '/stockocesi/' . $route;
             
-            // Ajouter les paramètres s'il y en a
+            
             if (!empty($params)) {
                 $url .= '?' . http_build_query($params);
             }
@@ -63,9 +63,9 @@ class Controller {
     /**
      * Rend un template Twig avec des données.
      *
-     * @param string $template Le nom du template (sans extension .twig)
-     * @param array $data Les données à passer au template
-     * @return string Le rendu du template
+     * @param string $template 
+     * @param array $data 
+     * @return string 
      * @throws \Exception Si le moteur de template n'est pas configuré
      */
     protected function render($template, $data = []) {
@@ -74,15 +74,15 @@ class Controller {
         }
 
         try {
-            // Ajouter les informations de session aux données du template
+            
             if (session_status() === PHP_SESSION_ACTIVE) {
                 $data['session'] = $_SESSION;
             }
 
-            // Ajouter le chemin de base pour les assets
+          
             $data['base_url'] = '/stockocesi';
             
-            // Afficher directement le contenu
+            
             echo $this->templateEngine->render($template . '.twig', $data);
             return null;
         } catch (\Twig\Error\LoaderError $e) {

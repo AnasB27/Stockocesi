@@ -44,6 +44,17 @@ class UserModel {
             'role' => $userData['role']
         ]);
     }
+    public function getAllAccounts() {
+        $sql = "SELECT u.*, s.name as store_name 
+                FROM user u 
+                LEFT JOIN store s ON u.store_id = s.id 
+                ORDER BY u.role, u.name";
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        
+        return $stmt->fetchAll();
+    }
     /**
      * Authentifie un utilisateur avec son email et son mot de passe.
      *
@@ -143,4 +154,57 @@ class UserModel {
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([$storeId, $userId]);
     }
+
+    public function deleteUser($id) {
+        $sql = "DELETE FROM user WHERE id = ? AND role != 'Admin'";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([$id]);
+    }
+
+    public function updateUser($userData) {
+        $fields = [];
+        $values = [];
+    
+        if (isset($userData['name'])) {
+            $fields[] = "name = ?";
+            $values[] = $userData['name'];
+        }
+        
+        if (isset($userData['firstname'])) {
+            $fields[] = "firstname = ?";
+            $values[] = $userData['firstname'];
+        }
+        
+        if (isset($userData['email'])) {
+            $fields[] = "email = ?";
+            $values[] = $userData['email'];
+        }
+        
+        if (isset($userData['role'])) {
+            $fields[] = "role = ?";
+            $values[] = $userData['role'];
+        }
+        
+        if (isset($userData['store_id'])) {
+            $fields[] = "store_id = ?";
+            $values[] = $userData['store_id'];
+        }
+        
+        if (isset($userData['password'])) {
+            $fields[] = "password = ?";
+            $values[] = $userData['password'];
+        }
+    
+        if (empty($fields)) {
+            return false;
+        }
+    
+        $values[] = $userData['id'];
+        
+        $sql = "UPDATE user SET " . implode(", ", $fields) . " WHERE id = ?";
+        $stmt = $this->db->prepare($sql);
+        
+        return $stmt->execute($values);
+    }
+
 }
