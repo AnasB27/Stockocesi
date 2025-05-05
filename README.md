@@ -23,7 +23,6 @@
 - **Gestion des utilisateurs** : Création, modification, suppression, gestion des rôles (Admin, Manager, Employé).
 - **Gestion multi-magasins** : Association des utilisateurs à un magasin, gestion indépendante des stocks par magasin.
 - **Recherche instantanée** : Filtrage dynamique des produits côté client (JavaScript).
-- **Contact** : Formulaire pour contacter l’administrateur.
 - **Mentions légales** : Page dédiée accessible depuis le footer.
 
 ---
