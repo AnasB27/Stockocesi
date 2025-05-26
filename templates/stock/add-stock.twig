@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Ajouter un produit</title>
+    <link rel="stylesheet" href="/stockocesi/static/css/main.css">
+    <link rel="stylesheet" href="/stockocesi/static/css/ajout_stock.css">
+</head>
+<body>
+    {% include 'layout/header.twig' %}
+    <main>
+        <form method="POST" action="/stockocesi/stock/add-stock" class="add-stock-form">
+            <h2>Ajouter un produit</h2>
+            {% if error_message %}
+                <div class="error-message">{{ error_message }}</div>
+            {% endif %}
+            {% if success_message %}
+                <div class="success-message">{{ success_message }}</div>
+            {% endif %}
+            <div class="form-group">
+                <label for="name">Nom du produit*</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <input type="text" id="description" name="description">
+            </div>
+            <div class="form-group">
+                <label for="quantity">Quantité*</label>
+                <input type="number" id="quantity" name="quantity" min="0" required>
+            </div>
+            <div class="form-group">
+                <label for="price">Prix unitaire (€)*</label>
+                <input type="number" id="price" name="price" min="0" step="0.01" required>
+            </div>
+            <div class="form-group">
+                <label for="alert_threshold">Seuil d'alerte*</label>
+                <input type="number" id="alert_threshold" name="alert_threshold" min="1" required>
+            </div>
+            <div class="form-group">
+                <label for="category_id">Catégorie*</label>
+                <select id="category_id" name="category_id" required>
+                    <option value="">Sélectionner une catégorie</option>
+                    {% for category in categories %}
+                        <option value="{{ category.id }}">{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="subcategory_id">Sous-catégorie*</label>
+                <select id="subcategory_id" name="subcategory_id" required>
+                    <option value="">Sélectionner une sous-catégorie</option>
+                    {% for subcategory in subcategories %}
+                        <option value="{{ subcategory.id }}">{{ subcategory.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="submit-button">Ajouter</button>
+        </form>
+    </main>
+    {% include 'layout/footer.twig' %}
+</body>
+</html>

@@ -1,23 +1,37 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Gestion de la recherche
+    // Recherche
     const searchInput = document.getElementById('searchInput');
-    searchInput.addEventListener('keyup', filterProducts);
+    if (searchInput) {
+        searchInput.addEventListener('keyup', filterProducts);
+    }
 
-    // Gestion des filtres
+    // Filtres
     const filterButton = document.getElementById('filterButton');
     const filterPanel = document.getElementById('filterPanel');
-    filterButton.addEventListener('click', () => {
-        filterPanel.style.display = filterPanel.style.display === 'none' ? 'block' : 'none';
-    });
+    if (filterButton) {
+        filterButton.addEventListener('click', () => {
+            if (filterPanel) {
+                filterPanel.style.display = filterPanel.style.display === 'none' ? 'block' : 'none';
+            }
+        });
+    }
 
-    document.getElementById('applyFilters').addEventListener('click', filterProducts);
+    const applyFilters = document.getElementById('applyFilters');
+    if (applyFilters) {
+        applyFilters.addEventListener('click', filterProducts);
+    }
 });
 
 function filterProducts() {
-    const searchValue = document.getElementById('searchInput').value.toLowerCase();
-    const categoryValue = document.getElementById('categoryFilter').value;
-    const minPrice = parseFloat(document.getElementById('minPrice').value) || 0;
-    const maxPrice = parseFloat(document.getElementById('maxPrice').value) || Infinity;
+    const searchInput = document.getElementById('searchInput');
+    const categoryFilter = document.getElementById('categoryFilter');
+    const minPriceInput = document.getElementById('minPrice');
+    const maxPriceInput = document.getElementById('maxPrice');
+
+    const searchValue = searchInput ? searchInput.value.toLowerCase() : '';
+    const categoryValue = categoryFilter ? categoryFilter.value : '';
+    const minPrice = minPriceInput ? parseFloat(minPriceInput.value) || 0 : 0;
+    const maxPrice = maxPriceInput ? parseFloat(maxPriceInput.value) || Infinity : Infinity;
 
     document.querySelectorAll('.stock-item').forEach(item => {
         const productName = item.querySelector('.product-info span:first-child').textContent.toLowerCase();
@@ -59,6 +73,6 @@ function editProduct(productId) {
     window.location.href = `/stockocesi/store/edit-product/${productId}`;
 }
 
-function showProductHistory(productId) {
+function showHistory(productId) {
     window.location.href = `/stockocesi/store/product-history/${productId}`;
 }

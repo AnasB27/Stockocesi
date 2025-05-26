@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ pageTitle }}</title>
+    <link rel="stylesheet" href="/stockocesi/static/css/main.css">
+    <link rel="stylesheet" href="/stockocesi/static/css/gerer_compte.css">  <!-- Modification ici -->
+</head>
+<body>
+    {% include 'layout/header.twig' with {'current_page': 'manage-accounts'} %}
+
+    <main>
+        <h1>Gestion des comptes</h1>
+        
+        <div class="search-container">
+            <input type="text" id="searchInput" class="search-input" placeholder="Rechercher un compte...">
+            <button id="filterButton" class="filter-button">
+                Filtrer
+            </button>
+        </div>
+        
+        <div class="account-list">
+            {% if accounts is empty %}
+                <p class="no-accounts">Aucun compte trouvé.</p>
+            {% else %}
+                {% for account in accounts %}
+                    <div class="account-item" data-id="{{ account.id }}">
+                        <div class="account-info">
+                            <span class="account-name"><strong>{{ account.name }} {{ account.firstname }}</strong></span>
+                            <span class="account-role">{{ account.role }}</span>
+                            {% if account.store_name %}
+                                <span class="account-store">{{ account.store_name }}</span>
+                            {% endif %}
+                        </div>
+                        {% if account.role != 'Admin' or is_super_admin %}
+                            <div class="account-actions">
+                                <button class="edit-button" onclick="editAccount({{ account.id }})">
+                                    Modifier
+                                </button>
+                                <button class="delete-button" onclick="deleteAccount({{ account.id }})">
+                                    Supprimer
+                                </button>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="add-account-button">
+            <a href="/stockocesi/admin/add-account" class="button-primary">Ajouter un compte</a>
+        </div>
+    </main>
+
+    {% include 'layout/footer.twig' %}
+
+    <script src="/stockocesi/static/js/manage-accounts.js"></script>
+</body>
+</html>

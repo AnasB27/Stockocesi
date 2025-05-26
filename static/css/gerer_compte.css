@@ -1,84 +1,296 @@
+/* Variables des couleurs */
+:root {
+    --primary-color: #e7311d;
+    --text-light: #ffffff;
+    --border-color: #ccc;
+    --hover-color: #c62816;
+    --background-light: #f5f5f5;
+    --edit-button-color: #808080;
+    --delete-button-color: #e74c3c;
+}
+
+/* Container principal */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Centrer le titre */
+main h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #333;
+    font-size: 24px;
+}
+
 /* Barre de recherche */
-.search-bar {
+.search-container {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    margin: 20px;
+    gap: 10px;
+    margin: 20px auto;
+    max-width: 400px;
+    padding: 0 15px;
 }
 
 .search-input {
-    width: 80%;
+    flex: 1;
     padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 16px;
+    max-width: 300px;
 }
 
-.filter-button img {
-    width: 24px;
-    height: 24px;
+.filter-button {
+    padding: 10px 20px;
+    background-color: var(--edit-button-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
     cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.filter-button:hover {
+    opacity: 0.8;
 }
 
 /* Liste des comptes */
 .account-list {
-    margin: 20px;
+    display: grid;
+    gap: 15px;
+    margin: 20px auto;
+    max-width: 600px;
 }
 
 .account-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #e7311d;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 5px;
-    margin-bottom: 10px;
+    background-color: white;
+    border: 1px solid var(--border-color);
+    color: #333;
+    padding: 15px 20px;
+    border-radius: 8px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.delete-button img {
-    width: 24px;
-    height: 24px;
+.account-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.account-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.account-name {
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.account-role {
+    font-size: 0.9em;
+    opacity: 0.9;
+}
+
+.account-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* Boutons */
+.edit-button,
+.delete-button {
+    border: none;
+    padding: 8px 16px;
     cursor: pointer;
+    border-radius: 4px;
+    color: white;
+    font-weight: 500;
+    transition: opacity 0.2s ease;
+    outline: none;
+}
+
+.edit-button {
+    background-color: var(--edit-button-color);
+}
+
+.delete-button {
+    background-color: var(--delete-button-color);
+}
+
+.edit-button:hover,
+.delete-button:hover {
+    opacity: 0.8;
+}
+
+/* Style du formulaire d'édition */
+.edit-form {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #333;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+    box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+/* Bouton d'ajout et actions */
+.add-account-button {
+    margin: 20px auto;
+    text-align: center;
+    max-width: 400px;
+}
+
+.button-primary {
+    background-color: var(--primary-color);
+    color: var(--text-light);
+    padding: 12px 24px;
+    border-radius: 4px;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.3s ease;
+    border: none;
+}
+
+.button-primary:hover {
+    background-color: var(--hover-color);
+}
+
+.button-secondary {
+    background-color: #6c757d;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 4px;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.3s ease;
+    border: none;
+}
+
+.button-secondary:hover {
+    background-color: #5a6268;
+}
+
+.form-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+    justify-content: center;
+}
+
+/* Message "aucun compte" */
+.no-accounts {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+    font-style: italic;
 }
 
 /* Responsive Design */
+@media (max-width: 1024px) {
+    .container {
+        max-width: 100%;
+        padding: 15px;
+    }
+}
+
 @media (max-width: 768px) {
-    .search-bar {
+    .search-container {
         flex-direction: column;
-        gap: 10px;
+        padding: 0 10px;
     }
 
     .search-input {
+        max-width: 100%;
         width: 100%;
-    }
-
-    .filter-button img {
-        width: 20px;
-        height: 20px;
     }
 
     .account-item {
         flex-direction: column;
-        align-items: flex-start;
-        padding: 15px;
+        text-align: center;
+        gap: 15px;
     }
 
-    .delete-button img {
-        align-self: flex-end;
+    .account-actions {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .edit-button,
+    .delete-button {
+        width: 120px;
+    }
+
+    .edit-form {
+        margin: 0 10px;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .button-primary,
+    .button-secondary,
+    .form-actions button,
+    .form-actions a {
+        width: 100%;
     }
 }
 
 @media (max-width: 480px) {
-    .search-bar {
-        margin: 10px;
-    }
-
-    .account-item {
+    .container {
         padding: 10px;
     }
 
-    .delete-button img {
-        width: 20px;
-        height: 20px;
+    main h1 {
+        font-size: 20px;
+    }
+
+    .search-input,
+    .form-group input,
+    .form-group select {
+        font-size: 14px;
+    }
+
+    .account-name {
+        font-size: 1em;
+    }
+
+    .account-role {
+        font-size: 0.8em;
     }
 }

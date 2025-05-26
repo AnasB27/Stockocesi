@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ pageTitle }}</title>
+    <link rel="stylesheet" href="/stockocesi/static/css/main.css">
+    <link rel="stylesheet" href="/stockocesi/static/css/stock.css">
+</head>
+<body data-role="{{ session.user_role }}" data-store-type="{{ store.product_type }}">
+    {% include 'layout/header.twig' %}
+
+    <main class="container">
+        <div class="search-filter-container">
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Rechercher un produit" class="search-input">
+                <button class="filter-button" id="filterButton">Filtrer</button>
+            </div>
+            <div id="filterPanel" class="filter-panel" style="display:none;">
+                <div class="filter-group">
+                    <select id="categoryFilter">
+                        <option value="">Toutes catégories</option>
+                        {% for category in categories %}
+                            <option value="{{ category.id }}">{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="number" id="minPrice" placeholder="Prix min">
+                    <input type="number" id="maxPrice" placeholder="Prix max">
+                    <button id="applyFilters" class="btn-primary">Appliquer</button>
+                </div>
+            </div>
+        </div>
+
+        {% if not employee %}
+            <div class="page-content">
+                <a href="/stockocesi/stock/add-stock" class="add-product-button">
+                    <i class="fas fa-plus"></i> Ajouter un produit
+                </a>
+                
+                {% if lowStockProducts is not empty %}
+                    <div class="stock-alerts">
+                        <div class="alert warning">
+                            Produits en stock faible : {{ lowStockProducts|length }}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        <div class="stock-list">
+            {% if products is empty %}
+                <p class="no-products">Aucun produit en stock.</p>
+            {% else %}
+                {% for product in products %}
+                    <div class="stock-item" 
+                         data-id="{{ product.id }}" 
+                         data-category="{{ product.category_id }}"
+                         data-subcategory="{{ product.subcategory_id }}">
+                        <div class="product-info">
+                            <h3>{{ product.name }}</h3>
+                            <p class="category">{{ product.category_name }}</p>
+                            <p class="subcategory">{{ product.subcategory_name }}</p>
+                            <p class="quantity {% if product.quantite <= product.seuil_alerte %}warning{% endif %}">
+                                Stock : {{ product.quantite }}
+                            </p>
+                            <p class="price">{{ product.prix|number_format(2, ',', ' ') }} €</p>
+                            {% if product.quantite <= product.seuil_alerte %}
+                                <span class="alert-badge">Stock faible</span>
+                            {% endif %}
+                        </div>
+                        {% if not employee %}
+                            <div class="product-actions">
+                                <button class="action-button edit" onclick="editProduct({{ product.id }})">
+                                    Modifier
+                                </button>
+                                <button class="action-button delete" onclick="confirmDelete({{ product.id }})">
+                                    Supprimer
+                                </button>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </main>
+
+    {% include 'layout/footer.twig' %}
+    
+    <script src="/stockocesi/static/js/stock.js"></script>
+</body>
+</html>

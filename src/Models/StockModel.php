@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+
+use PDO;
+
 class StockModel {
     private $db;
 
@@ -9,135 +12,167 @@ class StockModel {
         $this->db = Database::getInstance()->getConnection();
     }
 
-    /**
-     * Ajoute un nouvel article au stock
-     * @throws \PDOException si l'insertion échoue
-     */
-    public function addStock(string $nom, int $quantite, float $prix, int $entrepriseId, int $categoryId, int $alertThreshold): bool {
+    public function addStock(array $data): bool {
         try {
-            $sql = "INSERT INTO stocks (name, quantite, prix, entreprise_id, category_id, seuil_alerte, date_ajout) 
-                    VALUES (?, ?, ?, ?, ?, ?, NOW())";
+            $sql = "INSERT INTO stocks (
+                name, description, quantite, prix, 
+                seuil_alerte, category_id, subcategory_id, 
+                entreprise_id, date_ajout
+            ) VALUES (
+                :name, :description, :quantity, :price,
+                :alert_threshold, :category_id, :subcategory_id,
+                :store_id, NOW()
+            )";
+            
             $stmt = $this->db->prepare($sql);
             return $stmt->execute([
-                $nom, 
-                $quantite, 
-                $prix, 
-                $entrepriseId, 
-                $categoryId, 
-                $alertThreshold
+                'name' => $data['name'],
+                'description' => $data['description'] ?? '',
+                'quantity' => $data['quantity'],
+                'price' => $data['price'],
+                'alert_threshold' => $data['alert_threshold'],
+                'category_id' => $data['category_id'] ?? null,
+                'subcategory_id' => $data['subcategory_id'] ?? null,
+                'store_id' => $data['store_id']
             ]);
         } catch (\PDOException $e) {
             error_log("Erreur lors de l'ajout du stock: " . $e->getMessage());
-            throw $e;
-        }
-    }
-
-    /**
-     * Récupère toutes les catégories
-     * @throws \PDOException si la requête échoue
-     */
-    public function getAllCategories(): array {
-        try {
-            $sql = "SELECT id, name FROM category ORDER BY name ASC";  // Changé de 'categories' à 'category'
-            $stmt = $this->db->prepare($sql);
-            $stmt->execute();
-            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        } catch (\PDOException $e) {
-            error_log("Erreur lors de la récupération des catégories: " . $e->getMessage());
-            return [];
-        }
-    }
-    
-    /**
-     * 
-     * Debug
-     * @throws \PDOException
-     */
-
-     public function categoryExists(int $categoryId): bool {
-        try {
-            $sql = "SELECT EXISTS(SELECT 1 FROM category WHERE id = ?) as exists_flag";
-            $stmt = $this->db->prepare($sql);
-            $stmt->execute([$categoryId]);
-            return (bool) $stmt->fetchColumn();
-        } catch (\PDOException $e) {
-            error_log("Erreur lors de la vérification de la catégorie: " . $e->getMessage());
             return false;
         }
     }
-    /**
-     * Récupère tous les articles d'une entreprise
-     * @throws \PDOException si la requête échoue
-     */
-    public function getStocksByEntreprise(int $entrepriseId): array {
+
+    public function getStocksByEntreprise($entrepriseId): array {
         try {
-            error_log("Recherche des stocks pour entreprise_id: " . $entrepriseId);
-            
-            $sql = "SELECT s.*, c.name as category_name 
+            $sql = "SELECT s.*, c.name as category_name, 
+                    sc.name as subcategory_name, st.name as store_name 
                     FROM stocks s 
                     LEFT JOIN category c ON s.category_id = c.id 
-                    WHERE s.entreprise_id = ?";
+                    LEFT JOIN subcategory sc ON s.subcategory_id = sc.id
+                    LEFT JOIN store st ON s.entreprise_id = st.id
+                    WHERE s.entreprise_id = :entreprise_id";
             
             $stmt = $this->db->prepare($sql);
-            $stmt->execute([$entrepriseId]);
-            $results = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-            
-            error_log("Résultats trouvés: " . print_r($results, true));
-            return $results;
+            $stmt->execute(['entreprise_id' => $entrepriseId]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (\PDOException $e) {
-            error_log("Erreur lors de la récupération des stocks: " . $e->getMessage());
+            error_log("Erreur SQL: " . $e->getMessage());
             return [];
         }
     }
-    /**
-     * Récupère les articles en stock faible
-     * @throws \PDOException si la requête échoue
-     */
+
     public function getLowStockProducts(int $entrepriseId): array {
         try {
-            $sql = "SELECT s.*, c.name as category_name 
+            $sql = "SELECT s.*, c.name as category_name, sc.name as subcategory_name
                     FROM stocks s 
                     LEFT JOIN category c ON s.category_id = c.id 
-                    WHERE s.entreprise_id = ? AND s.quantite <= s.seuil_alerte 
-                    ORDER BY s.quantite ASC";
+                    LEFT JOIN subcategory sc ON s.subcategory_id = sc.id
+                    WHERE s.entreprise_id = :entreprise_id 
+                    AND s.quantite <= s.seuil_alerte";
+            
             $stmt = $this->db->prepare($sql);
-            $stmt->execute([$entrepriseId]);
-            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            $stmt->execute(['entreprise_id' => $entrepriseId]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (\PDOException $e) {
             error_log("Erreur lors de la récupération des stocks faibles: " . $e->getMessage());
             return [];
         }
     }
 
-    /**
-     * Met à jour les informations d'un article
-     * @throws \PDOException si la mise à jour échoue
-     */
-    public function updateStock(int $stockId, int $quantite, float $prix): bool {
+    public function getCategoryById(int $id): ?array {
         try {
-            $sql = "UPDATE stocks SET quantite = ?, prix = ? WHERE id = ?";
+            $sql = "SELECT * FROM category WHERE id = ?";
             $stmt = $this->db->prepare($sql);
-            return $stmt->execute([$quantite, $prix, $stockId]);
+            $stmt->execute([$id]);
+            return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
         } catch (\PDOException $e) {
-            error_log("Erreur lors de la mise à jour du stock: " . $e->getMessage());
-            throw $e;
+            error_log("Erreur lors de la récupération de la catégorie: " . $e->getMessage());
+            return null;
         }
     }
 
-    /**
-     * Supprime un article du stock
-     * @throws \PDOException si la suppression échoue
-     */
+    public function getSubcategoryById(int $id): ?array {
+        try {
+            $sql = "SELECT * FROM subcategory WHERE id = ?";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([$id]);
+            return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+        } catch (\PDOException $e) {
+            error_log("Erreur lors de la récupération de la sous-catégorie: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    public function getAllCategories(): array {
+        try {
+            $sql = "SELECT id, name, store_type FROM category ORDER BY store_type, name ASC";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
+            error_log("Erreur lors de la récupération des catégories: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    public function getAllSubcategories(): array {
+        try {
+            $sql = "SELECT id, name, main_category FROM subcategory ORDER BY main_category, name ASC";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
+            error_log("Erreur lors de la récupération des sous-catégories: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    public function getSubcategoriesByMainCategory(string $mainCategory): array {
+        try {
+            $sql = "SELECT id, name FROM subcategory WHERE main_category = ? ORDER BY name ASC";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([$mainCategory]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
+            error_log("Erreur lors de la récupération des sous-catégories: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    public function updateStock(int $stockId, array $data): bool {
+        try {
+            $sql = "UPDATE stocks SET 
+                    name = :name,
+                    quantite = :quantity,
+                    prix = :price,
+                    category_id = :category_id,
+                    subcategory_id = :subcategory_id,
+                    seuil_alerte = :alert_threshold
+                    WHERE id = :id";
+
+            $stmt = $this->db->prepare($sql);
+            return $stmt->execute([
+                'name' => $data['name'],
+                'quantity' => $data['quantity'],
+                'price' => $data['price'],
+                'category_id' => $data['category_id'] ?? null,
+                'subcategory_id' => $data['subcategory_id'] ?? null,
+                'alert_threshold' => $data['alert_threshold'],
+                'id' => $stockId
+            ]);
+        } catch (\PDOException $e) {
+            error_log("Erreur lors de la mise à jour du stock: " . $e->getMessage());
+            return false;
+        }
+    }
+
     public function deleteStock(int $stockId): bool {
         try {
             $this->db->beginTransaction();
 
-            // Supprimer d'abord les mouvements associés
             $sql = "DELETE FROM stock_movements WHERE stock_id = ?";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([$stockId]);
 
-            // Puis supprimer l'article
             $sql = "DELETE FROM stocks WHERE id = ?";
             $stmt = $this->db->prepare($sql);
             $result = $stmt->execute([$stockId]);
@@ -147,41 +182,10 @@ class StockModel {
         } catch (\PDOException $e) {
             $this->db->rollBack();
             error_log("Erreur lors de la suppression du stock: " . $e->getMessage());
-            throw $e;
+            return false;
         }
     }
 
-    /**
-     * Enregistre un mouvement de stock
-     * @throws \PDOException si l'enregistrement échoue
-     */
-    public function recordMovement(int $stockId, int $quantity, string $type, string $reason, int $userId): bool {
-        try {
-            $sql = "INSERT INTO stock_movements (stock_id, quantity, movement_type, reason, user_id, movement_date) 
-                    VALUES (?, ?, ?, ?, ?, NOW())";
-            $stmt = $this->db->prepare($sql);
-            return $stmt->execute([$stockId, $quantity, $type, $reason, $userId]);
-        } catch (\PDOException $e) {
-            error_log("Erreur lors de l'enregistrement du mouvement: " . $e->getMessage());
-            throw $e;
-        }
-    }
-
-    public function getStockById(int $stockId): ?array {
-        try {
-            $sql = "SELECT s.*, c.name as category_name 
-                    FROM stocks s 
-                    LEFT JOIN category c ON s.category_id = c.id 
-                    WHERE s.id = ?";
-            $stmt = $this->db->prepare($sql);
-            $stmt->execute([$stockId]);
-            return $stmt->fetch(\PDO::FETCH_ASSOC) ?: null;
-        } catch (\PDOException $e) {
-            error_log("Erreur lors de la récupération du stock: " . $e->getMessage());
-            throw $e;
-        }
-    }
-    
     public function addStockQuantity(int $stockId, int $quantity): bool {
         try {
             $sql = "UPDATE stocks SET quantite = quantite + ? WHERE id = ?";
@@ -189,20 +193,51 @@ class StockModel {
             return $stmt->execute([$quantity, $stockId]);
         } catch (\PDOException $e) {
             error_log("Erreur lors de l'ajout de quantité: " . $e->getMessage());
-            throw $e;
+            return false;
         }
     }
-    
+
     public function removeStockQuantity(int $stockId, int $quantity): bool {
         try {
-            $sql = "UPDATE stocks SET quantite = quantite - ? WHERE id = ? AND quantite >= ?";
+            $sql = "UPDATE stocks SET quantite = quantite - ? 
+                    WHERE id = ? AND quantite >= ?";
             $stmt = $this->db->prepare($sql);
             return $stmt->execute([$quantity, $stockId, $quantity]);
         } catch (\PDOException $e) {
             error_log("Erreur lors de la réduction de quantité: " . $e->getMessage());
-            throw $e;
+            return false;
         }
     }
 
+    public function recordMovement(int $stockId, int $quantity, string $type, string $reason, int $userId): bool {
+        try {
+            $sql = "INSERT INTO stock_movements (
+                    stock_id, quantity, movement_type, reason, user_id, movement_date
+                ) VALUES (?, ?, ?, ?, ?, NOW())";
+            $stmt = $this->db->prepare($sql);
+            return $stmt->execute([$stockId, $quantity, $type, $reason, $userId]);
+        } catch (\PDOException $e) {
+            error_log("Erreur lors de l'enregistrement du mouvement: " . $e->getMessage());
+            return false;
+        }
+    }
 
+    public function getStockById(int $stockId): ?array {
+        try {
+            $sql = "SELECT s.*, c.name as category_name, 
+                    sc.name as subcategory_name, st.name as store_name 
+                    FROM stocks s 
+                    LEFT JOIN category c ON s.category_id = c.id 
+                    LEFT JOIN subcategory sc ON s.subcategory_id = sc.id
+                    LEFT JOIN store st ON s.entreprise_id = st.id
+                    WHERE s.id = :stock_id";
+            
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute(['stock_id' => $stockId]);
+            return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+        } catch (\PDOException $e) {
+            error_log("Erreur lors de la récupération du stock: " . $e->getMessage());
+            return null;
+        }
+    }
 }
